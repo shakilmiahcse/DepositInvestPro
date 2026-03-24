@@ -46,7 +46,7 @@
     }
 
     //Deposit VS Withdraw Analytics
-    if(document.getElementById('transactionAnalysis')){
+   if(document.getElementById('transactionAnalysis')){
       var chartCurrency = _currency;
       const transactionAnalysis = document.getElementById('transactionAnalysis').getContext('2d');   
       const transactionAnalysisChart =  new Chart(transactionAnalysis, {
@@ -168,6 +168,56 @@
         chartCurrency = $(this).find(':selected').data('symbol');  
         loadChart(currency_id);
       })
+   }
+
+   if (document.getElementById("investmentSummaryChart") && typeof window.investmentSummaryData !== "undefined") {
+      const investmentSummary = document.getElementById("investmentSummaryChart").getContext("2d");
+      new Chart(investmentSummary, {
+        type: "bar",
+        data: {
+          labels: window.investmentSummaryData.labels,
+          datasets: [{
+            data: window.investmentSummaryData.values,
+            backgroundColor: [
+              "rgba(52, 152, 219, 0.25)",
+              "rgba(46, 204, 113, 0.25)",
+              "rgba(231, 76, 60, 0.25)",
+              "rgba(241, 196, 15, 0.25)"
+            ],
+            borderColor: [
+              "rgba(52, 152, 219, 1)",
+              "rgba(46, 204, 113, 1)",
+              "rgba(231, 76, 60, 1)",
+              "rgba(241, 196, 15, 1)"
+            ],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              display: false
+            },
+            tooltip: {
+              callbacks: {
+                label: function(context) {
+                  return " " + _currency + " " + context.parsed.y;
+                }
+              }
+            }
+          },
+          scales: {
+            y: {
+              ticks: {
+                callback: function(value) {
+                  return _currency + " " + value;
+                }
+              }
+            }
+          }
+        }
+      });
    }
 
    $(document).on('change', '#branch-switch', function(){});

@@ -2,6 +2,8 @@
 namespace App\Http\Controllers;
 
 use Carbon\Carbon;
+use App\Models\Investment;
+use App\Models\InvestmentTransaction;
 use App\Models\Loan;
 use App\Models\Member;
 use App\Models\Expense;
@@ -40,6 +42,27 @@ class DashboardController extends Controller {
             $data['recent_transactions'] = Transaction::limit('10')
                 ->orderBy('trans_date', 'desc')
                 ->get();
+
+            $data['investments'] = Investment::query()
+                ->withSum(['transactions as total_invested_sum' => function ($query) {
+                    $query->where('type', 'invest');
+                }], 'amount')
+                ->withSum(['transactions as total_return_sum' => function ($query) {
+                    $query->where('type', 'return');
+                }], 'amount')
+                ->withSum(['transactions as total_expense_sum' => function ($query) {
+                    $query->where('type', 'expense');
+                }], 'amount')
+                ->orderByDesc('start_date')
+                ->orderByDesc('id')
+                ->limit(10)
+                ->get();
+
+            $data['total_investments'] = Investment::count();
+            $data['investment_total_invested'] = (float) InvestmentTransaction::where('type', 'invest')->sum('amount') + Investment::get()->sum('invested_amount');
+            $data['investment_total_returns'] = (float) InvestmentTransaction::where('type', 'return')->sum('amount');
+            $data['investment_total_expenses'] = (float) InvestmentTransaction::where('type', 'expense')->sum('amount');
+            $data['investment_total_profit'] = $data['investment_total_returns'] - $data['investment_total_invested'] - $data['investment_total_expenses'];
 
             $data['due_repayments'] = LoanRepayment::selectRaw('loan_repayments.*, MAX(repayment_date) as repayment_date, COUNT(id) as total_due_repayment, SUM(amount_to_pay) as total_due')
                 ->with('loan')

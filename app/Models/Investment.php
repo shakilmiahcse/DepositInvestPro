@@ -29,4 +29,30 @@ class Investment extends Model
     {
         return $this->hasMany(InvestmentTransaction::class, 'investment_id');
     }
+
+    public function getTotalInvestedAttribute()
+    {
+        return (float) $this->transactions()
+            ->where('type', 'invest')
+            ->sum('amount');
+    }
+
+    public function getTotalReturnAttribute()
+    {
+        return (float) $this->transactions()
+            ->where('type', 'return')
+            ->sum('amount');
+    }
+
+    public function getTotalExpenseAttribute()
+    {
+        return (float) $this->transactions()
+            ->where('type', 'expense')
+            ->sum('amount');
+    }
+
+    public function getNetProfitAttribute()
+    {
+        return $this->total_return - $this->total_invested - $this->total_expense;
+    }
 }
