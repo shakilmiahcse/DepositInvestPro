@@ -1,7 +1,7 @@
 <p align="center">
-  <h1 align="center">Coop Fund Manager</h1>
+  <h1 align="center">DepositInvestPro</h1>
   <p align="center">
-    A Laravel-based Cooperative Fund & Investment Management System
+    A Laravel-based Cooperative Deposit & Investment Management System
   </p>
 </p>
 
@@ -9,7 +9,7 @@
 
 ## 🚀 About This Project
 
-**Coop Fund Manager** is a Laravel-based web application designed to manage a **cooperative society's member deposits and investment system**.
+**DepositInvestPro** is a Laravel-based web application designed to manage a **cooperative society's member deposits and investment system**.
 
 This project is customized from Credit Lite, where all **loan and interest features have been removed**, and the focus is on:
 
@@ -76,8 +76,8 @@ This project has been customized with the following changes:
 ## 📦 Installation
 
 ```bash
-git clone https://github.com/your-username/coop-fund-manager.git
-cd coop-fund-manager
+git clone https://github.com/your-username/DepositInvestPro.git
+cd DepositInvestPro
 
 composer install
 cp .env.example .env
