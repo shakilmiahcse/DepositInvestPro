@@ -114,6 +114,14 @@
 </div>
 
 <div class="row">
+	<div class="col-12 mb-4">
+		<div class="alert {{ $investment_available_balance < 0 ? 'alert-danger' : 'alert-info' }} mb-0">
+			<strong>{{ _lang('Available Investment Balance') }}:</strong> {{ decimalPlace($investment_available_balance, currency()) }}
+		</div>
+	</div>
+</div>
+
+<div class="row">
 	@if (in_array('dashboard.expense_overview_widget',$permissions))
 	<div class="col-md-4 col-sm-5 mb-4">
 		<div class="card h-100">

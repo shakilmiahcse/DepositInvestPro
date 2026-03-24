@@ -3,6 +3,37 @@
 @section('content')
 <div class="row">
 	<div class="col-lg-12">
+		<div class="row">
+			<div class="col-md-4">
+				<div class="card">
+					<div class="card-body">
+						<h6 class="text-muted">{{ _lang('Total Account Deposits') }}</h6>
+						<h4 class="mb-0">{{ decimalPlace($fundSummary['total_account_deposits'], currency()) }}</h4>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-4">
+				<div class="card">
+					<div class="card-body">
+						<h6 class="text-muted">{{ _lang('Total Invested') }}</h6>
+						<h4 class="mb-0">{{ decimalPlace($fundSummary['total_invested'], currency()) }}</h4>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-4">
+				<div class="card">
+					<div class="card-body">
+						<h6 class="text-muted">{{ _lang('Available Balance') }}</h6>
+						<h4 class="mb-0 {{ $fundSummary['available_balance'] < 0 ? 'text-danger' : 'text-success' }}">{{ decimalPlace($fundSummary['available_balance'], currency()) }}</h4>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="col-lg-12">
 		<div class="card no-export">
 			<div class="card-header d-flex align-items-center">
 				<span class="panel-title">{{ _lang('Investments') }}</span>

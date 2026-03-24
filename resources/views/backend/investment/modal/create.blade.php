@@ -2,6 +2,17 @@
 	{{ csrf_field() }}
 	<div class="row px-2">
 		<div class="col-md-12">
+			<div class="alert alert-info">
+				<div><strong>{{ _lang('Total Account Deposits') }}:</strong> {{ decimalPlace($fundSummary['total_account_deposits'], currency()) }}</div>
+				<div><strong>{{ _lang('Total Invested') }}:</strong> {{ decimalPlace($fundSummary['total_invested'], currency()) }}</div>
+				<div><strong>{{ _lang('Available Balance') }}:</strong> <span id="available_balance">{{ decimalPlace($fundSummary['available_balance'], currency()) }}</span></div>
+			</div>
+			<div class="alert alert-warning d-none" id="investment_balance_warning">
+				{{ _lang('Investment amount exceeds available balance') }}
+			</div>
+		</div>
+
+		<div class="col-md-12">
 			<div class="form-group">
 				<label class="control-label">{{ _lang('Name') }}</label>
 				<input type="text" class="form-control" name="name" value="{{ old('name') }}" required>
@@ -60,3 +71,19 @@
 		</div>
 	</div>
 </form>
+
+<script>
+(function ($) {
+	"use strict";
+
+	var availableBalance = {{ $fundSummary['available_balance'] }};
+
+	function toggleInvestmentWarning() {
+		var amount = parseFloat($("input[name='invested_amount']").val() || 0);
+		$("#investment_balance_warning").toggleClass("d-none", amount <= availableBalance);
+	}
+
+	$(document).on("input", "input[name='invested_amount']", toggleInvestmentWarning);
+	toggleInvestmentWarning();
+})(jQuery);
+</script>

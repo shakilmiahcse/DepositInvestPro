@@ -4,19 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\Investment;
 use App\Models\InvestmentTransaction;
+use App\Services\FundService;
 use Illuminate\Http\Request;
 use Validator;
 
 class InvestmentController extends Controller
 {
+    protected $fundService;
+
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(FundService $fundService)
     {
         date_default_timezone_set(get_option('timezone', 'Asia/Dhaka'));
+        $this->fundService = $fundService;
     }
 
     /**
@@ -27,8 +31,9 @@ class InvestmentController extends Controller
     public function index()
     {
         $investments = Investment::orderByDesc('start_date')->orderByDesc('id')->get();
+        $fundSummary = $this->fundService->getFundSummary();
 
-        return view('backend.investment.list', compact('investments'));
+        return view('backend.investment.list', compact('investments', 'fundSummary'));
     }
 
     /**
@@ -42,7 +47,9 @@ class InvestmentController extends Controller
             return back();
         }
 
-        return view('backend.investment.modal.create');
+        $fundSummary = $this->fundService->getFundSummary();
+
+        return view('backend.investment.modal.create', compact('fundSummary'));
     }
 
     /**
@@ -70,6 +77,18 @@ class InvestmentController extends Controller
 
             return redirect()->route('investments.create')
                 ->withErrors($validator)
+                ->withInput();
+        }
+
+        if (! $this->fundService->hasSufficientFunds($request->input('invested_amount'))) {
+            $message = _lang('Investment amount exceeds available balance');
+
+            if ($request->ajax()) {
+                return response()->json(['result' => 'error', 'message' => [$message]]);
+            }
+
+            return redirect()->route('investments.create')
+                ->with('error', $message)
                 ->withInput();
         }
 
@@ -129,7 +148,9 @@ class InvestmentController extends Controller
             return back();
         }
 
-        return view('backend.investment.modal.edit', compact('investment', 'id'));
+        $fundSummary = $this->fundService->getFundSummary($investment->id);
+
+        return view('backend.investment.modal.edit', compact('investment', 'id', 'fundSummary'));
     }
 
     /**
@@ -162,6 +183,19 @@ class InvestmentController extends Controller
         }
 
         $investment                  = Investment::findOrFail($id);
+
+        if (! $this->fundService->hasSufficientFunds($request->input('invested_amount'), $investment->id)) {
+            $message = _lang('Investment amount exceeds available balance');
+
+            if ($request->ajax()) {
+                return response()->json(['result' => 'error', 'message' => [$message]]);
+            }
+
+            return redirect()->route('investments.edit', $id)
+                ->with('error', $message)
+                ->withInput();
+        }
+
         $investment->name            = $request->input('name');
         $investment->description     = $request->input('description');
         $investment->invested_amount = $request->input('invested_amount');
@@ -216,9 +250,10 @@ class InvestmentController extends Controller
     public function addTransaction(Request $request, $investment_id)
     {
         $investment = Investment::findOrFail($investment_id);
+        $fundSummary = $this->fundService->getFundSummary();
 
         if ($request->isMethod('get')) {
-            return view('backend.investment.modal.transaction', compact('investment'));
+            return view('backend.investment.modal.transaction', compact('investment', 'fundSummary'));
         }
 
         $validator = Validator::make($request->all(), [
@@ -235,6 +270,18 @@ class InvestmentController extends Controller
 
             return redirect()->route('investments.transactions.add', $investment->id)
                 ->withErrors($validator)
+                ->withInput();
+        }
+
+        if ($request->input('type') === 'invest' && ! $this->fundService->hasSufficientFunds($request->input('amount'))) {
+            $message = _lang('Investment amount exceeds available balance');
+
+            if ($request->ajax()) {
+                return response()->json(['result' => 'error', 'message' => [$message]]);
+            }
+
+            return redirect()->route('investments.transactions.add', $investment->id)
+                ->with('error', $message)
                 ->withInput();
         }
 

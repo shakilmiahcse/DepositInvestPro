@@ -9,6 +9,7 @@ use App\Models\Member;
 use App\Models\Expense;
 use App\Models\Transaction;
 use App\Models\LoanRepayment;
+use App\Services\FundService;
 use Illuminate\Database\Eloquent\Builder;
 
 class DashboardController extends Controller {
@@ -58,11 +59,14 @@ class DashboardController extends Controller {
                 ->limit(10)
                 ->get();
 
+            $fundService = app(FundService::class);
+
             $data['total_investments'] = Investment::count();
-            $data['investment_total_invested'] = (float) InvestmentTransaction::where('type', 'invest')->sum('amount') + Investment::get()->sum('invested_amount');
+            $data['investment_total_invested'] = $fundService->getTotalInvested();
             $data['investment_total_returns'] = (float) InvestmentTransaction::where('type', 'return')->sum('amount');
             $data['investment_total_expenses'] = (float) InvestmentTransaction::where('type', 'expense')->sum('amount');
             $data['investment_total_profit'] = $data['investment_total_returns'] - $data['investment_total_invested'] - $data['investment_total_expenses'];
+            $data['investment_available_balance'] = $fundService->getAvailableBalance();
 
             $data['due_repayments'] = LoanRepayment::selectRaw('loan_repayments.*, MAX(repayment_date) as repayment_date, COUNT(id) as total_due_repayment, SUM(amount_to_pay) as total_due')
                 ->with('loan')
