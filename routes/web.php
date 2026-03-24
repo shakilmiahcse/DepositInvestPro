@@ -102,6 +102,8 @@ Route::group(['middleware' => ['install']], function () {
                 Route::resource('savings_products', SavingsProductController::class);
 
                 //Investments
+                Route::get('investments/{investment_id}/transactions', [InvestmentController::class, 'listTransactions'])->name('investments.transactions.index');
+                Route::match(['get', 'post'], 'investments/{investment_id}/transactions/add', [InvestmentController::class, 'addTransaction'])->name('investments.transactions.add');
                 Route::resource('investments', InvestmentController::class)->middleware("demo:PUT|PATCH|DELETE");
 
                 //Transaction Category

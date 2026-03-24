@@ -24,4 +24,9 @@ class Investment extends Model
         'start_date'      => 'date',
         'end_date'        => 'date',
     ];
+
+    public function transactions()
+    {
+        return $this->hasMany(InvestmentTransaction::class, 'investment_id');
+    }
 }

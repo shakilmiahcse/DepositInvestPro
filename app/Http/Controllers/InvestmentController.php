@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Investment;
+use App\Models\InvestmentTransaction;
 use Illuminate\Http\Request;
 use Validator;
 
@@ -103,7 +104,9 @@ class InvestmentController extends Controller
      */
     public function show(Request $request, $id)
     {
-        $investment = Investment::findOrFail($id);
+        $investment = Investment::with(['transactions' => function ($query) {
+            $query->latest('date')->latest('id');
+        }])->findOrFail($id);
 
         if (! $request->ajax()) {
             return back();
@@ -193,6 +196,70 @@ class InvestmentController extends Controller
         $investment->delete();
 
         return redirect()->route('investments.index')->with('success', _lang('Deleted Successfully'));
+    }
+
+    public function listTransactions($investment_id)
+    {
+        $investment = Investment::with(['transactions' => function ($query) {
+            $query->latest('date')->latest('id');
+        }])->findOrFail($investment_id);
+
+        $totals = [
+            'invest'  => $investment->transactions->where('type', 'invest')->sum('amount'),
+            'return'  => $investment->transactions->where('type', 'return')->sum('amount'),
+            'expense' => $investment->transactions->where('type', 'expense')->sum('amount'),
+        ];
+
+        return view('backend.investment.transactions', compact('investment', 'totals'));
+    }
+
+    public function addTransaction(Request $request, $investment_id)
+    {
+        $investment = Investment::findOrFail($investment_id);
+
+        if ($request->isMethod('get')) {
+            return view('backend.investment.modal.transaction', compact('investment'));
+        }
+
+        $validator = Validator::make($request->all(), [
+            'type'   => 'required|in:invest,return,expense',
+            'amount' => 'required|numeric|min:0.01',
+            'note'   => 'nullable',
+            'date'   => 'required|date',
+        ]);
+
+        if ($validator->fails()) {
+            if ($request->ajax()) {
+                return response()->json(['result' => 'error', 'message' => $validator->errors()->all()]);
+            }
+
+            return redirect()->route('investments.transactions.add', $investment->id)
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        $transaction                = new InvestmentTransaction();
+        $transaction->investment_id = $investment->id;
+        $transaction->type          = $request->input('type');
+        $transaction->amount        = $request->input('amount');
+        $transaction->note          = $request->input('note');
+        $transaction->date          = $request->input('date');
+        $transaction->save();
+
+        if (! $request->ajax()) {
+            return redirect()->route('investments.transactions.index', $investment->id)
+                ->with('success', _lang('Saved Successfully'));
+        }
+
+        return response()->json([
+            'result'  => 'success',
+            'action'  => 'store',
+            'message' => _lang('Saved Successfully'),
+            'data'    => [
+                'id' => $transaction->id,
+            ],
+            'table'   => '#investment_transactions_table',
+        ]);
     }
 
     /**

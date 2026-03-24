@@ -41,6 +41,7 @@
 
 										<div class="dropdown-menu" aria-labelledby="investmentDropdown{{ $investment->id }}">
 											<a href="{{ route('investments.show', $investment->id) }}" data-title="{{ _lang('Investment Details') }}" class="dropdown-item ajax-modal"><i class="ti-eye"></i>&nbsp;{{ _lang('View') }}</a>
+											<a href="{{ route('investments.transactions.index', $investment->id) }}" class="dropdown-item"><i class="ti-list"></i>&nbsp;{{ _lang('Transactions') }}</a>
 											<a href="{{ route('investments.edit', $investment->id) }}" data-title="{{ _lang('Update Investment') }}" class="dropdown-item dropdown-edit ajax-modal"><i class="ti-pencil-alt"></i>&nbsp;{{ _lang('Edit') }}</a>
 											<button class="btn-remove dropdown-item" type="submit"><i class="ti-trash"></i>&nbsp;{{ _lang('Delete') }}</button>
 										</div>
