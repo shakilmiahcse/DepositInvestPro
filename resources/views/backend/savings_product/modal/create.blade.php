@@ -34,42 +34,6 @@
 
 		<div class="col-md-6">
 			<div class="form-group">
-				<label class="control-label">{{ _lang('Yearly Interest Rate') }} (%)</label>
-				<input type="text" class="form-control float-field" name="interest_rate" value="{{ old('interest_rate') }}" >
-			</div>
-		</div>
-
-		<div class="col-md-6">
-			<div class="form-group">
-				<label class="control-label">{{ _lang('Interest Period') }}</label>
-				<select class="form-control auto-select" data-selected="{{ old('interest_period') }}" name="interest_period" >
-					<option value="">{{ _lang('Select One') }}</option>
-					<option value="1">{{ _lang('Every 1 month') }}</option>
-					<option value="3">{{ _lang('Every 3 months') }}</option>
-					<option value="6">{{ _lang('Every 6 months') }}</option>
-					<option value="12">{{ _lang('Every 12 months') }}</option>
-				</select>
-			</div>
-		</div>
-
-		<div class="col-md-6">
-			<div class="form-group">
-				<label class="control-label">{{ _lang('Interest Method') }}</label>
-				<select class="form-control" name="interest_method" >
-					<option value="daily_outstanding_balance">{{ _lang('Daily Outstanding Balance') }}</option>
-				</select>
-			</div>
-		</div>
-
-		<div class="col-md-6">
-			<div class="form-group">
-				<label class="control-label">{{ _lang('Minimum Balance for Interest') }}</label>
-				<input type="number" class="form-control" name="min_bal_interest_rate" value="{{ old('min_bal_interest_rate') }}">
-			</div>
-		</div>
-
-		<div class="col-md-6">
-			<div class="form-group">
 				<label class="control-label">{{ _lang('Allow Withdraw') }}</label>
 				<select class="form-control auto-select" data-selected="{{ old('allow_withdraw', 1) }}" name="allow_withdraw"  required>
 					<option value="">{{ _lang('Select One') }}</option>

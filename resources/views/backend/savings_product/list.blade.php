@@ -14,9 +14,7 @@
 					<thead>
 					    <tr>
 						    <th>{{ _lang('Name') }}</th>
-							<th>{{ _lang('Interest Rate') }}</th>
-							<th>{{ _lang('Interest Method') }}</th>
-							<th>{{ _lang('Interest Period') }}</th>
+                            <th>{{ _lang('Monthly Deposit Amount') }}</th>
 							<th>{{ _lang('Status') }}</th>
 							<th class="text-center">{{ _lang('Action') }}</th>
 					    </tr>
@@ -25,24 +23,16 @@
 					    @foreach($savingsproducts as $savingsproduct)
 					    <tr data-id="row_{{ $savingsproduct->id }}">
 							<td class='name'>{{ $savingsproduct->name }} - {{ $savingsproduct->currency->name }}</td>
-							<td class='interest_rate'>{{ $savingsproduct->interest_rate != NULL ? $savingsproduct->interest_rate : 0 }} %</td>
-							<td class='interest_method'>
-								{{ $savingsproduct->interest_method == 'minimum_balance' ? _lang('Minimum Savings Balance') : _lang('Daily Outstanding Balance') }}
-							</td>
-							<td class='interest_period'>
-								@if($savingsproduct->interest_period != NULL)
-								{{ _lang('Every').' '.$savingsproduct->interest_period.' '._lang('month') }}
-								@endif
-							</td>
+							<td class='monthly_deposit_amount'>{{ $savingsproduct->monthly_deposit_amount }}</td>
 							<td class='status'>
 								{!! xss_clean(status($savingsproduct->status)) !!}
-							</td>			
-							
+							</td>
+
 							<td class="text-center">
 								<span class="dropdown">
 								  <button class="btn btn-primary dropdown-toggle btn-xs" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
 								  {{ _lang('Action') }}
-								  
+
 								  </button>
 								  <form action="{{ route('savings_products.destroy', $savingsproduct['id']) }}" method="post">
 									{{ csrf_field() }}

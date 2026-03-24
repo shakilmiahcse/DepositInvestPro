@@ -51,11 +51,6 @@ class SavingsProductController extends Controller {
             'account_number_prefix'          => 'nullable|max:10',
             'starting_account_number'        => 'required|integer',
             'currency_id'                    => 'required',
-            'interest_rate'                  => 'nullable|numeric',
-            'interest_method'                => 'required_with:interest_rate',
-            'interest_period'                => 'required_with:interest_rate',
-            //'interest_posting_period'        => 'required_with:interest_rate',
-            'min_bal_interest_rate'          => 'nullable|required_with:interest_rate|numeric',
             'allow_withdraw'                 => 'required',
             'minimum_account_balance'        => 'required|numeric',
             'minimum_deposit_amount'         => 'required|numeric',
@@ -64,11 +59,6 @@ class SavingsProductController extends Controller {
             'maintenance_fee_posting_period' => '',
             'status'                         => 'required',
             'auto_create'                    => 'required',
-        ], [
-            'interest_method.required_with'         => _lang('Interest method is required'),
-            'interest_period.required_with'         => _lang('Interest period is required'),
-            'interest_posting_period.required_with' => _lang('Interest posting period is required'),
-            'min_bal_interest_rate.required_with'   => _lang('Minimum balance for interest is required'),
         ]);
 
         if ($validator->fails()) {
@@ -86,10 +76,10 @@ class SavingsProductController extends Controller {
         $savingsproduct->account_number_prefix          = $request->input('account_number_prefix');
         $savingsproduct->starting_account_number        = $request->input('starting_account_number');
         $savingsproduct->currency_id                    = $request->input('currency_id');
-        $savingsproduct->interest_rate                  = $request->input('interest_rate');
-        $savingsproduct->interest_method                = $request->input('interest_method');
-        $savingsproduct->interest_period                = $request->input('interest_period');
-        $savingsproduct->min_bal_interest_rate          = $request->input('min_bal_interest_rate');
+        $savingsproduct->interest_rate                  = null;
+        $savingsproduct->interest_method                = null;
+        $savingsproduct->interest_period                = null;
+        $savingsproduct->min_bal_interest_rate          = null;
         $savingsproduct->allow_withdraw                 = $request->input('allow_withdraw');
         $savingsproduct->minimum_account_balance        = $request->input('minimum_account_balance');
         $savingsproduct->minimum_deposit_amount         = $request->minimum_deposit_amount;
@@ -160,11 +150,6 @@ class SavingsProductController extends Controller {
             'account_number_prefix'          => 'nullable|max:10',
             'starting_account_number'        => 'required|integer',
             'currency_id'                    => 'required',
-            'interest_rate'                  => 'nullable|numeric',
-            'interest_method'                => 'required_with:interest_rate',
-            'interest_period'                => 'required_with:interest_rate',
-            //'interest_posting_period'        => 'required_with:interest_rate',
-            'min_bal_interest_rate'          => 'nullable|required_with:interest_rate|numeric',
             'allow_withdraw'                 => 'required',
             'minimum_account_balance'        => 'required|numeric',
             'minimum_deposit_amount'         => 'required|numeric',
@@ -173,11 +158,6 @@ class SavingsProductController extends Controller {
             'maintenance_fee_posting_period' => '',
             'status'                         => 'required',
             'auto_create'                    => 'required',
-        ], [
-            'interest_method.required_with'         => _lang('Interest method is required'),
-            'interest_period.required_with'         => _lang('Interest period is required'),
-            'interest_posting_period.required_with' => _lang('Interest posting period is required'),
-            'min_bal_interest_rate.required_with'   => _lang('Minimum balance for interest is required'),
         ]);
 
         if ($validator->fails()) {
@@ -195,10 +175,10 @@ class SavingsProductController extends Controller {
         $savingsproduct->account_number_prefix          = $request->input('account_number_prefix');
         $savingsproduct->starting_account_number        = $request->input('starting_account_number');
         $savingsproduct->currency_id                    = $request->input('currency_id');
-        $savingsproduct->interest_rate                  = $request->input('interest_rate');
-        $savingsproduct->interest_method                = $request->input('interest_method');
-        $savingsproduct->interest_period                = $request->input('interest_period');
-        $savingsproduct->min_bal_interest_rate          = $request->input('min_bal_interest_rate');
+        $savingsproduct->interest_rate                  = null;
+        $savingsproduct->interest_method                = null;
+        $savingsproduct->interest_period                = null;
+        $savingsproduct->min_bal_interest_rate          = null;
         $savingsproduct->allow_withdraw                 = $request->input('allow_withdraw');
         $savingsproduct->minimum_account_balance        = $request->input('minimum_account_balance');
         $savingsproduct->minimum_deposit_amount         = $request->minimum_deposit_amount;
