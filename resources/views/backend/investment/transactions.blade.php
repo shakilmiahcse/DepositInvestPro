@@ -1,6 +1,10 @@
 @extends('layouts.app')
 
 @section('content')
+@php
+	$permissions = auth()->user()->user_type === 'user' ? permission_list() : [];
+	$canCreateTransaction = auth()->user()->user_type === 'admin' || in_array('investments.transactions.add', $permissions);
+@endphp
 <div class="row">
 	<div class="col-lg-12">
 		<div class="card">
@@ -9,9 +13,11 @@
 				<a href="{{ route('investments.index') }}" class="btn btn-outline-primary btn-xs ml-auto mr-2">
 					<i class="ti-arrow-left"></i>&nbsp;{{ _lang('Back') }}
 				</a>
+				@if($canCreateTransaction)
 				<a class="btn btn-primary btn-xs ajax-modal" data-title="{{ _lang('Add Transaction') }}" href="{{ route('investments.transactions.add', $investment->id) }}">
 					<i class="ti-plus"></i>&nbsp;{{ _lang('Add New') }}
 				</a>
+				@endif
 			</div>
 
 			<div class="card-body">

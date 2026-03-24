@@ -122,6 +122,11 @@ class DashboardController extends Controller {
         return redirect()->route('dashboard.index');
     }
 
+    public function investment_overview_widget() {
+        // Use for Permission Only
+        return redirect()->route('dashboard.index');
+    }
+
     public function due_loan_list() {
         // Use for Permission Only
         return redirect()->route('dashboard.index');

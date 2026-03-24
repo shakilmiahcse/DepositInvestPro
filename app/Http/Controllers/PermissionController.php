@@ -61,8 +61,7 @@ class PermissionController extends Controller {
                 }
 
                 if (isset($explodedAction[1]) && strpos($explodedAction[0], 'App') === 0) {
-                    $test = new $explodedAction[0]();
-                    if (method_exists($test, $explodedAction[1])) {
+                    if (class_exists($explodedAction[0]) && method_exists($explodedAction[0], $explodedAction[1])) {
                         $routes[$explodedAction[0]][] = array("method" => $explodedAction[1], "action" => $route->action);
                     }
                 }

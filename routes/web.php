@@ -101,11 +101,6 @@ Route::group(['middleware' => ['install']], function () {
                 //Savings Products
                 Route::resource('savings_products', SavingsProductController::class);
 
-                //Investments
-                Route::get('investments/{investment_id}/transactions', [InvestmentController::class, 'listTransactions'])->name('investments.transactions.index');
-                Route::match(['get', 'post'], 'investments/{investment_id}/transactions/add', [InvestmentController::class, 'addTransaction'])->name('investments.transactions.add');
-                Route::resource('investments', InvestmentController::class)->middleware("demo:PUT|PATCH|DELETE");
-
                 //Transaction Category
                 Route::resource('transaction_categories', TransactionCategoryController::class);
 
@@ -165,6 +160,7 @@ Route::group(['middleware' => ['install']], function () {
                 Route::get('dashboard/expense_overview_widget', [DashboardController::class, 'expense_overview_widget'])->name('dashboard.expense_overview_widget');
                 Route::get('dashboard/deposit_withdraw_analytics', [DashboardController::class, 'deposit_withdraw_analytics'])->name('dashboard.deposit_withdraw_analytics');
                 Route::get('dashboard/recent_transaction_widget', [DashboardController::class, 'recent_transaction_widget'])->name('dashboard.recent_transaction_widget');
+                Route::get('dashboard/investment_overview_widget', [DashboardController::class, 'investment_overview_widget'])->name('dashboard.investment_overview_widget');
                 if (config('features.loan_enabled')) {
                     Route::get('dashboard/loan_requests_widget', [DashboardController::class, 'loan_requests_widget'])->name('dashboard.loan_requests_widget');
                     Route::get('dashboard/due_loan_list', [DashboardController::class, 'due_loan_list'])->name('dashboard.due_loan_list');
@@ -201,6 +197,11 @@ Route::group(['middleware' => ['install']], function () {
                 Route::post('monthly_deposits/{id}/mark_paid', [MonthlyDepositController::class, 'mark_paid'])->name('monthly_deposits.mark_paid');
                 Route::get('monthly_deposits/account/{account_id}', [MonthlyDepositController::class, 'history'])->name('monthly_deposits.history');
                 Route::resource('monthly_deposits', MonthlyDepositController::class)->only(['index']);
+
+                //Investments
+                Route::get('investments/{investment_id}/transactions', [InvestmentController::class, 'listTransactions'])->name('investments.transactions.index');
+                Route::match(['get', 'post'], 'investments/{investment_id}/transactions/add', [InvestmentController::class, 'addTransaction'])->name('investments.transactions.add');
+                Route::resource('investments', InvestmentController::class)->middleware("demo:PUT|PATCH|DELETE");
 
                 if (config('features.loan_enabled')) {
                     //Interest Controller

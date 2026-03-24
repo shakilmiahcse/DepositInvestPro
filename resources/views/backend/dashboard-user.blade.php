@@ -57,6 +57,7 @@
 	</div>
 	@endif
 
+	@if (in_array('dashboard.investment_overview_widget', $permissions))
 	<div class="col-xl-3 col-md-6">
 		<div class="card mb-4 info-card dashboard-card">
 			<div class="card-body">
@@ -72,9 +73,11 @@
 			</div>
 		</div>
 	</div>
+	@endif
 
 </div>
 
+@if (in_array('dashboard.investment_overview_widget', $permissions))
 <div class="row">
 	<div class="col-xl-3 col-md-6 mb-4">
 		<div class="card h-100 border-left-primary">
@@ -112,7 +115,9 @@
 		</div>
 	</div>
 </div>
+@endif
 
+@if (in_array('dashboard.investment_overview_widget', $permissions))
 <div class="row">
 	<div class="col-12 mb-4">
 		<div class="alert {{ $investment_available_balance < 0 ? 'alert-danger' : 'alert-info' }} mb-0">
@@ -120,6 +125,7 @@
 		</div>
 	</div>
 </div>
+@endif
 
 <div class="row">
 	@if (in_array('dashboard.expense_overview_widget',$permissions))
@@ -155,6 +161,7 @@
 </div>
 
 <div class="row">
+	@if (in_array('dashboard.investment_overview_widget', $permissions))
 	<div class="col-md-4 mb-4">
 		<div class="card h-100">
 			<div class="card-header d-flex align-items-center">
@@ -165,7 +172,9 @@
 			</div>
 		</div>
 	</div>
+	@endif
 
+	@if (in_array('dashboard.investment_overview_widget', $permissions))
 	<div class="col-md-8 mb-4">
 		<div class="card h-100">
 			<div class="card-header d-flex align-items-center">
@@ -211,6 +220,7 @@
 			</div>
 		</div>
 	</div>
+	@endif
 </div>
 
 @if (in_array('dashboard.recent_transaction_widget',$permissions))
@@ -268,12 +278,14 @@
 @endsection
 
 @section('js-script')
+@if (in_array('dashboard.investment_overview_widget', $permissions))
 <script>
 window.investmentSummaryData = {
 	labels: ["{{ _lang('Invested') }}", "{{ _lang('Returns') }}", "{{ _lang('Expenses') }}", "{{ _lang('Profit') }}"],
 	values: [{{ $investment_total_invested }}, {{ $investment_total_returns }}, {{ $investment_total_expenses }}, {{ $investment_total_profit }}]
 };
 </script>
+@endif
 <script src="{{ asset('public/backend/plugins/chartJs/chart.min.js') }}"></script>
 <script src="{{ asset('public/backend/assets/js/dashboard.js?v=1.1') }}"></script>
 @endsection
