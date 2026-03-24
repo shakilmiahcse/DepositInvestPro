@@ -69,6 +69,10 @@ $member_requests = request_count('member_requests', true);
 </li>
 
 <li>
+	<a href="{{ route('investments.index') }}"><i class="fas fa-chart-line"></i><span>{{ _lang('Investments') }}</span></a>
+</li>
+
+<li>
 	<a href="javascript: void(0);"><i class="fas fa-money-bill-wave"></i><span>{{ _lang('Expense') }}</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
 	<ul class="nav-second-level" aria-expanded="false">
 		<li class="nav-item"><a class="nav-link" href="{{ route('expenses.index') }}">{{ _lang('All Expense') }}</a></li>

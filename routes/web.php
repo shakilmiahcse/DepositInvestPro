@@ -14,6 +14,7 @@ use App\Http\Controllers\Select2Controller;
 use App\Http\Controllers\UtilityController;
 use App\Http\Controllers\CurrencyController;
 use App\Http\Controllers\InterestController;
+use App\Http\Controllers\InvestmentController;
 use App\Http\Controllers\LanguageController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\GuarantorController;
@@ -99,6 +100,9 @@ Route::group(['middleware' => ['install']], function () {
 
                 //Savings Products
                 Route::resource('savings_products', SavingsProductController::class);
+
+                //Investments
+                Route::resource('investments', InvestmentController::class)->middleware("demo:PUT|PATCH|DELETE");
 
                 //Transaction Category
                 Route::resource('transaction_categories', TransactionCategoryController::class);
