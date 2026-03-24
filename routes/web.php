@@ -104,7 +104,9 @@ Route::group(['middleware' => ['install']], function () {
                 Route::resource('transaction_categories', TransactionCategoryController::class);
 
                 //Loan Products
-                Route::resource('loan_products', LoanProductController::class)->except('show');
+                if (config('features.loan_enabled')) {
+                    Route::resource('loan_products', LoanProductController::class)->except('show');
+                }
 
                 //Expense Categories
                 Route::resource('expense_categories', ExpenseCategoryController::class)->except('show');
@@ -154,12 +156,14 @@ Route::group(['middleware' => ['install']], function () {
                 Route::get('dashboard/total_customer_widget', [DashboardController::class, 'total_customer_widget'])->name('dashboard.total_customer_widget');
                 Route::get('dashboard/deposit_requests_widget', [DashboardController::class, 'deposit_requests_widget'])->name('dashboard.deposit_requests_widget');
                 Route::get('dashboard/withdraw_requests_widget', [DashboardController::class, 'withdraw_requests_widget'])->name('dashboard.withdraw_requests_widget');
-                Route::get('dashboard/loan_requests_widget', [DashboardController::class, 'loan_requests_widget'])->name('dashboard.loan_requests_widget');
                 Route::get('dashboard/expense_overview_widget', [DashboardController::class, 'expense_overview_widget'])->name('dashboard.expense_overview_widget');
                 Route::get('dashboard/deposit_withdraw_analytics', [DashboardController::class, 'deposit_withdraw_analytics'])->name('dashboard.deposit_withdraw_analytics');
                 Route::get('dashboard/recent_transaction_widget', [DashboardController::class, 'recent_transaction_widget'])->name('dashboard.recent_transaction_widget');
-                Route::get('dashboard/due_loan_list', [DashboardController::class, 'due_loan_list'])->name('dashboard.due_loan_list');
-                Route::get('dashboard/active_loan_balances',  [DashboardController::class, 'active_loan_balances'])->name('dashboard.active_loan_balances');
+                if (config('features.loan_enabled')) {
+                    Route::get('dashboard/loan_requests_widget', [DashboardController::class, 'loan_requests_widget'])->name('dashboard.loan_requests_widget');
+                    Route::get('dashboard/due_loan_list', [DashboardController::class, 'due_loan_list'])->name('dashboard.due_loan_list');
+                    Route::get('dashboard/active_loan_balances', [DashboardController::class, 'active_loan_balances'])->name('dashboard.active_loan_balances');
+                }
 
                 //Member Controller
                 Route::match(['get', 'post'], 'members/import', [MemberController::class, 'import'])->name('members.import');
@@ -192,10 +196,12 @@ Route::group(['middleware' => ['install']], function () {
                 Route::get('monthly_deposits/account/{account_id}', [MonthlyDepositController::class, 'history'])->name('monthly_deposits.history');
                 Route::resource('monthly_deposits', MonthlyDepositController::class)->only(['index']);
 
-                //Interest Controller
-                Route::get('interest_calculation/get_last_posting/{account_type_id?}', [InterestController::class, 'get_last_posting'])->name('interest_calculation.get_last_posting');
-                Route::match(['get', 'post'], 'interest_calculation/calculator', [InterestController::class, 'calculator'])->name('interest_calculation.calculator');
-                Route::post('interest_calculation/posting', [InterestController::class, 'interest_posting'])->name('interest_calculation.interest_posting');
+                if (config('features.loan_enabled')) {
+                    //Interest Controller
+                    Route::get('interest_calculation/get_last_posting/{account_type_id?}', [InterestController::class, 'get_last_posting'])->name('interest_calculation.get_last_posting');
+                    Route::match(['get', 'post'], 'interest_calculation/calculator', [InterestController::class, 'calculator'])->name('interest_calculation.calculator');
+                    Route::post('interest_calculation/posting', [InterestController::class, 'interest_posting'])->name('interest_calculation.interest_posting');
+                }
 
                 //Transaction
                 Route::get('transactions/get_table_data', [TransactionController::class, 'get_table_data']);
@@ -224,27 +230,29 @@ Route::group(['middleware' => ['install']], function () {
                 Route::get('expenses/get_table_data', [ExpenseController::class, 'get_table_data']);
                 Route::resource('expenses', ExpenseController::class);
 
-                //Loan Controller
-                Route::get('loans/upcoming_loan_repayments', [LoanController::class, 'upcoming_loan_repayments'])->name('loans.upcoming_loan_repayments');
-                Route::post('loans/get_table_data', [LoanController::class, 'get_table_data']);
-                Route::get('loans/calculator', [LoanController::class, 'calculator'])->name('loans.admin_calculator');
-                Route::post('loans/calculator/calculate', [LoanController::class, 'calculate'])->name('loans.calculate');
-                Route::match(['get', 'post'], 'loans/approve/{id}', [LoanController::class, 'approve'])->name('loans.approve');
-                Route::get('loans/reject/{id}', [LoanController::class, 'reject'])->name('loans.reject');
-                Route::get('loans/filter/{status?}', [LoanController::class, 'index'])->name('loans.filter')->where('status', '[A-Za-z]+');
-                Route::resource('loans', LoanController::class);
+                if (config('features.loan_enabled')) {
+                    //Loan Controller
+                    Route::get('loans/upcoming_loan_repayments', [LoanController::class, 'upcoming_loan_repayments'])->name('loans.upcoming_loan_repayments');
+                    Route::post('loans/get_table_data', [LoanController::class, 'get_table_data']);
+                    Route::get('loans/calculator', [LoanController::class, 'calculator'])->name('loans.admin_calculator');
+                    Route::post('loans/calculator/calculate', [LoanController::class, 'calculate'])->name('loans.calculate');
+                    Route::match(['get', 'post'], 'loans/approve/{id}', [LoanController::class, 'approve'])->name('loans.approve');
+                    Route::get('loans/reject/{id}', [LoanController::class, 'reject'])->name('loans.reject');
+                    Route::get('loans/filter/{status?}', [LoanController::class, 'index'])->name('loans.filter')->where('status', '[A-Za-z]+');
+                    Route::resource('loans', LoanController::class);
 
-                //Loan Collateral Controller
-                Route::get('loan_collaterals/loan/{loan_id}', [LoanCollateralController::class, 'index'])->name('loan_collaterals.index');
-                Route::resource('loan_collaterals', LoanCollateralController::class)->except('index');
+                    //Loan Collateral Controller
+                    Route::get('loan_collaterals/loan/{loan_id}', [LoanCollateralController::class, 'index'])->name('loan_collaterals.index');
+                    Route::resource('loan_collaterals', LoanCollateralController::class)->except('index');
 
-                //Loan Guarantor Controller
-                Route::resource('guarantors', GuarantorController::class)->except(['show', 'index']);
+                    //Loan Guarantor Controller
+                    Route::resource('guarantors', GuarantorController::class)->except(['show', 'index']);
 
-                //Loan Payment Controller
-                Route::get('loan_payments/get_repayment_by_loan_id/{loan_id}', [LoanPaymentController::class, 'get_repayment_by_loan_id']);
-                Route::get('loan_payments/get_table_data', [LoanPaymentController::class, 'get_table_data']);
-                Route::resource('loan_payments', LoanPaymentController::class);
+                    //Loan Payment Controller
+                    Route::get('loan_payments/get_repayment_by_loan_id/{loan_id}', [LoanPaymentController::class, 'get_repayment_by_loan_id']);
+                    Route::get('loan_payments/get_table_data', [LoanPaymentController::class, 'get_table_data']);
+                    Route::resource('loan_payments', LoanPaymentController::class);
+                }
 
                 //Bank Accounts
 				Route::resource('bank_accounts', BankAccountController::class)->middleware("demo:PUT|PATCH|DELETE");
@@ -257,9 +265,11 @@ Route::group(['middleware' => ['install']], function () {
                 Route::match(['get', 'post'], 'reports/account_statement', [ReportController::class, 'account_statement'])->name('reports.account_statement');
                 Route::match(['get', 'post'], 'reports/account_balances', [ReportController::class, 'account_balances'])->name('reports.account_balances');
                 Route::match(['get', 'post'], 'reports/transactions_report', [ReportController::class, 'transactions_report'])->name('reports.transactions_report');
-                Route::match(['get', 'post'], 'reports/loan_report', [ReportController::class, 'loan_report'])->name('reports.loan_report');
-                Route::get('reports/loan_due_report', [ReportController::class, 'loan_due_report'])->name('reports.loan_due_report');
-                Route::match(['get', 'post'], 'reports/loan_repayment_report', [ReportController::class, 'loan_repayment_report'])->name('reports.loan_repayment_report');
+                if (config('features.loan_enabled')) {
+                    Route::match(['get', 'post'], 'reports/loan_report', [ReportController::class, 'loan_report'])->name('reports.loan_report');
+                    Route::get('reports/loan_due_report', [ReportController::class, 'loan_due_report'])->name('reports.loan_due_report');
+                    Route::match(['get', 'post'], 'reports/loan_repayment_report', [ReportController::class, 'loan_repayment_report'])->name('reports.loan_repayment_report');
+                }
                 Route::match(['get', 'post'], 'reports/expense_report', [ReportController::class, 'expense_report'])->name('reports.expense_report');
                 Route::match(['get', 'post'], 'reports/cash_in_hand', [ReportController::class, 'cash_in_hand'])->name('reports.cash_in_hand');
                 Route::match(['get', 'post'], 'reports/bank_transactions', [ReportController::class, 'bank_transactions'])->name('reports.bank_transactions');
@@ -280,13 +290,15 @@ Route::group(['middleware' => ['install']], function () {
                 Route::post('transfer/get_final_amount', [App\Http\Controllers\Customer\TransferController::class, 'get_final_amount'])->name('transfer.get_final_amount');
                 Route::get('transfer/transaction_requests', [App\Http\Controllers\Customer\TransferController::class, 'transaction_requests'])->name('trasnactions.transaction_requests');
 
-                //Loan Controller
-                Route::match(['get', 'post'], 'loans/calculator', [App\Http\Controllers\Customer\LoanController::class, 'calculator'])->name('loans.calculator');
-                Route::get('loans/loan_products', [App\Http\Controllers\Customer\LoanController::class, 'loan_products'])->name('loans.loan_products');
-                Route::match(['get', 'post'], 'loans/apply_loan', [App\Http\Controllers\Customer\LoanController::class, 'apply_loan'])->name('loans.apply_loan');
-                Route::get('loans/loan_details/{id}', [App\Http\Controllers\Customer\LoanController::class, 'loan_details'])->name('loans.loan_details');
-                Route::match(['get', 'post'], 'loans/payment/{loan_id}', [App\Http\Controllers\Customer\LoanController::class, 'loan_payment'])->name('loans.loan_payment');
-                Route::get('loans/my_loans', [App\Http\Controllers\Customer\LoanController::class, 'index'])->name('loans.my_loans');
+                if (config('features.loan_enabled')) {
+                    //Loan Controller
+                    Route::match(['get', 'post'], 'loans/calculator', [App\Http\Controllers\Customer\LoanController::class, 'calculator'])->name('loans.calculator');
+                    Route::get('loans/loan_products', [App\Http\Controllers\Customer\LoanController::class, 'loan_products'])->name('loans.loan_products');
+                    Route::match(['get', 'post'], 'loans/apply_loan', [App\Http\Controllers\Customer\LoanController::class, 'apply_loan'])->name('loans.apply_loan');
+                    Route::get('loans/loan_details/{id}', [App\Http\Controllers\Customer\LoanController::class, 'loan_details'])->name('loans.loan_details');
+                    Route::match(['get', 'post'], 'loans/payment/{loan_id}', [App\Http\Controllers\Customer\LoanController::class, 'loan_payment'])->name('loans.loan_payment');
+                    Route::get('loans/my_loans', [App\Http\Controllers\Customer\LoanController::class, 'index'])->name('loans.my_loans');
+                }
 
                 //Deposit Money
                 Route::match(['get', 'post'], 'deposit/manual_deposit/{id}', [App\Http\Controllers\Customer\DepositController::class, 'manual_deposit'])->name('deposit.manual_deposit');
