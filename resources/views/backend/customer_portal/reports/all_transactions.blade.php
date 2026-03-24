@@ -35,7 +35,6 @@
 										<option value="Deposit">{{ _lang('Deposit') }}</option>
 										<option value="Withdraw">{{ _lang('Withdraw') }}</option>
 										<option value="Transfer">{{ _lang('Transfer') }}</option>
-                                        <option value="Loan_Repayment">{{ _lang('Loan Repayment') }}</option>
 										<option value="Interest">{{ _lang('Interest') }}</option>
 										<option value="Fee">{{ _lang('Fee') }}</option>
 										<option value="Account_Maintenance_Fee">{{ _lang('Account Maintenance Fee') }}</option>

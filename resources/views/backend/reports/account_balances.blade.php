@@ -42,7 +42,7 @@
 					<thead>
 						<th>{{ _lang('Account Number') }}</th>
 						<th class="text-right">{{ _lang('Balance') }}</th>
-						<th class="text-right">{{ _lang('Loan Guarantee') }}</th>
+						<th class="text-right">{{ _lang('Blocked Amount') }}</th>
 						<th class="text-right">{{ _lang('Current Balance') }}</th>
 					</thead>
 					<tbody>

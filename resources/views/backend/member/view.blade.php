@@ -7,7 +7,6 @@
 			 <li class="nav-item"><a class="nav-link active" data-toggle="tab" href="#member_details"><i class="ti-user"></i>&nbsp;{{ _lang('Member Details') }}</a></li>
 			 <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#account_overview"><i class="ti-credit-card"></i>&nbsp;{{ _lang('Account Overview') }}</a></li>
 			 <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#transaction-history"><i class="ti-view-list-alt"></i>{{ _lang('Transactions') }}</a></li>
-			 <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#member_loans"><i class="ti-agenda"></i>&nbsp;{{ _lang('Loans') }}</a></li>
 			 <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#kyc_documents"><i class="ti-files"></i>&nbsp;{{ _lang('KYC Documents') }}</a></li>
              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#email"><i class="ti-email"></i>&nbsp;{{ _lang('Send Email') }}</a></li>
              <li class="nav-item"><a class="nav-link" data-toggle="tab" href="#sms"><i class="ti-comment-alt"></i>&nbsp;{{ _lang('Send SMS') }}</a></li>
@@ -80,7 +79,7 @@
                                         <th class="text-nowrap">{{ _lang('Account Type') }}</th>
                                         <th>{{ _lang('Currency') }}</th>
                                         <th class="text-right">{{ _lang('Balance') }}</th>
-                                        <th class="text-nowrap text-right">{{ _lang('Loan Guarantee') }}</th>
+                                        <th class="text-nowrap text-right">{{ _lang('Blocked Amount') }}</th>
                                         <th class="text-nowrap text-right">{{ _lang('Current Balance') }}</th>
                                     </tr>
                                 </thead>
@@ -128,55 +127,6 @@
 					</div>
 				</div>
 			</div><!--End Transaction Table-->
-
-			<div id="member_loans" class="tab-pane">
-                <div class="card">
-                    <div class="card-header">
-                        <span class="header-title">{{ _lang('Loans') }}</span>
-                    </div>
-
-                    <div class="card-body">
-						<table id="loans_table" class="table table-bordered data-table">
-                            <thead>
-                                <tr>
-                                    <th>{{ _lang('Loan ID') }}</th>
-                                    <th>{{ _lang('Loan Product') }}</th>
-                                    <th class="text-right">{{ _lang('Applied Amount') }}</th>
-                                    <th class="text-right">{{ _lang('Total Payable') }}</th>
-                                    <th class="text-right">{{ _lang('Amount Paid') }}</th>
-                                    <th class="text-right">{{ _lang('Due Amount') }}</th>
-                                    <th>{{ _lang('Release Date') }}</th>
-                                    <th>{{ _lang('Status') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach($member->loans as $loan)
-                                <tr>
-                                    <td><a href="{{ route('loans.show',$loan->id) }}">{{ $loan->loan_id }}</a></td>
-                                    <td>{{ $loan->loan_product->name }}</td>
-                                    <td class="text-right">{{ decimalPlace($loan->applied_amount, currency($loan->currency->name)) }}</td>
-                                    <td class="text-right">{{ decimalPlace($loan->total_payable, currency($loan->currency->name)) }}</td>
-                                    <td class="text-right">{{ decimalPlace($loan->total_paid, currency($loan->currency->name)) }}</td>
-                                    <td class="text-right">{{ decimalPlace($loan->total_payable - $loan->total_paid, currency($loan->currency->name)) }}</td>
-                                    <td>{{ $loan->release_date }}</td>
-                                    <td>
-                                        @if($loan->status == 0)
-                                            {!! xss_clean(show_status(_lang('Pending'), 'warning')) !!}
-                                        @elseif($loan->status == 1)
-                                            {!! xss_clean(show_status(_lang('Approved'), 'success')) !!}
-                                        @elseif($loan->status == 2)
-                                            {!! xss_clean(show_status(_lang('Completed'), 'info')) !!}
-                                        @elseif($loan->status == 3)
-                                            {!! xss_clean(show_status(_lang('Cancelled'), 'danger')) !!}
-                                        @endif
-                                    </td>
-                                </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
-					</div>
-				</div>
-			</div>
 
 			<div id="kyc_documents" class="tab-pane">
                 <div class="card">
@@ -373,5 +323,4 @@
 })(jQuery);
 </script>
 @endsection
-
 

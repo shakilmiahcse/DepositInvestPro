@@ -13,7 +13,6 @@
 						<option value="1">{{ _lang('Approved') }}</option>
 						<option value="2">{{ _lang('Completed') }}</option>
 					</select>
-					<a class="btn btn-primary btn-xs" href="{{ route('loans.create') }}"><i class="ti-plus"></i>&nbsp;{{ _lang('Add New') }}</a>
 				</div>
 			</div>
 

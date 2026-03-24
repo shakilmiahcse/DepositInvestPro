@@ -50,21 +50,6 @@
 		</div>
 	</div>
 
-	<div class="col-xl-3 col-md-6">
-		<div class="card mb-4 danger-card dashboard-card">
-			<div class="card-body">
-				<div class="d-flex">
-					<div class="flex-grow-1">
-						<h5>{{ _lang('Pending Loans') }}</h5>
-						<h4 class="pt-1 mb-0"><b>{{ request_count('pending_loans') }}</b></h4>
-					</div>
-					<div>
-						<a href="{{ route('loans.index') }}"><i class="ti-arrow-right"></i>&nbsp;{{ _lang('View') }}</a>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
 </div>
 
 <div class="row">
@@ -91,90 +76,6 @@
 			</div>
 			<div class="card-body">
 				<canvas id="transactionAnalysis"></canvas>
-			</div>
-		</div>
-	</div>
-</div>
-
-<div class="row">
-	<div class="col-md-12 mb-4">
-		<div class="card mb-4">
-			<div class="card-header">
-				{{ _lang('Active Loan Balances') }}
-			</div>
-			<div class="card-body px-0 pt-0">
-				<div class="table-responsive">
-					<table class="table table-bordered">
-						<thead>
-							<tr>
-								<th class="text-nowrap pl-4">{{ _lang('Currency') }}</th>
-								<th class="text-nowrap">{{ _lang('Applied Amount') }}</th>
-								<th class="text-nowrap">{{ _lang('Paid Amount') }}</th>
-								<th class="text-nowrap">{{ _lang('Due Amount') }}</th>
-							</tr>
-						</thead>
-						<tbody>
-							@if(count($loan_balances) == 0)
-								<tr>
-									<td colspan="4"><p class="text-center">{{ _lang('No Data Available') }}</p></td>
-								</tr>
-							@endif
-							@foreach($loan_balances as $loan_balance)
-							<tr>
-								<td class="pl-4">{{ $loan_balance->currency->name }}</td>
-								<td>{{ decimalPlace($loan_balance->total_amount, currency($loan_balance->currency->name)) }}</td>
-								<td>{{ decimalPlace($loan_balance->total_paid, currency($loan_balance->currency->name)) }}</td>
-								<td>{{ decimalPlace($loan_balance->total_amount - $loan_balance->total_paid, currency($loan_balance->currency->name)) }}</td>
-							</tr>
-							@endforeach	
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
-
-
-<div class="row">
-	<div class="col-md-12 mb-4">
-		<div class="card mb-4">
-			<div class="card-header">
-				{{ _lang('Due Loan Payments') }}
-			</div>
-			<div class="card-body px-0 pt-0">
-				<div class="table-responsive">
-					<table class="table table-bordered">
-						<thead>
-							<tr>
-								<th class="text-nowrap pl-4">{{ _lang('Loan ID') }}</th>
-								<th class="text-nowrap">{{ _lang('Member No') }}</th>
-								<th class="text-nowrap">{{ _lang('Member') }}</th>
-								<th class="text-nowrap">{{ _lang('Last Payment Date') }}</th>
-								<th class="text-nowrap">{{ _lang('Due Repayments') }}</th>
-								<th class="text-nowrap text-right pr-4">{{ _lang('Total Due') }}</th>
-							</tr>
-						</thead>
-						<tbody>
-							@if(count($due_repayments) == 0)
-								<tr>
-									<td colspan="6"><p class="text-center">{{ _lang('No Data Available') }}</p></td>
-								</tr>
-							@endif
-
-							@foreach($due_repayments as $repayment)
-							<tr>
-								<td class="pl-4">{{ $repayment->loan->loan_id }}</td>
-								<td>{{ $repayment->loan->borrower->member_no }}</td>
-								<td>{{ $repayment->loan->borrower->name }}</td>
-								<td class="text-nowrap">{{ $repayment->repayment_date }}</td>
-								<td class="text-nowrap">{{ $repayment->total_due_repayment }}</td>
-								<td class="text-nowrap text-right pr-4">{{ decimalPlace($repayment->total_due, currency($repayment->loan->currency->name)) }}</td>
-							</tr>
-							@endforeach
-						</tbody>
-					</table>
-				</div>
 			</div>
 		</div>
 	</div>

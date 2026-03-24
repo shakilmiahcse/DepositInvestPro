@@ -34,7 +34,7 @@
 							@endforeach
 						</tr>
 						<tr>
-							<td>{{ _lang('Loan Cash Payment') }}</td>
+							<td>{{ _lang('Cash Collection') }}</td>
 							@foreach($currencies as $c)
 							<td class="text-right text-success pr-4">{{ isset($total_cash_payment[$c->name]) ? '+ '. decimalPlace($total_cash_payment[$c->name]->total_cash_payment, currency($c->name)) : 0 }}</td>						
 							@php $cash_in_hand[$c->name] += isset($total_cash_payment[$c->name]) ? $total_cash_payment[$c->name]->total_cash_payment : 0; @endphp
@@ -55,7 +55,7 @@
 							@endforeach
 						</tr>
 						<tr>
-							<td>{{ _lang('Loan Cash Disbursement') }}</td>
+							<td>{{ _lang('Cash Disbursement') }}</td>
 							@foreach($currencies as $c)
 							<td class="text-right text-danger pr-4">{{ isset($total_cash_disbursement[$c->name]) ? '- '. decimalPlace($total_cash_disbursement[$c->name]->total_cash_disbursement, currency($c->name)) : 0 }}</td>						
 							@php $cash_in_hand[$c->name] -= isset($total_cash_disbursement[$c->name]) ? $total_cash_disbursement[$c->name]->total_cash_disbursement : 0; @endphp

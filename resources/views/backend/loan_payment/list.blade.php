@@ -6,7 +6,6 @@
 		<div class="card">
 			<div class="card-header d-flex justify-content-between align-items-center">
 				<span class="panel-title">{{ _lang('Loan Repayments') }}</span>
-				<a class="btn btn-primary btn-xs float-right" href="{{ route('loan_payments.create') }}"><i class="ti-plus"></i>&nbsp;{{ _lang('Add Repayment') }}</a>
 			</div>
 			<div class="card-body">
 				<table id="loan_payments_table" class="table table-bordered">

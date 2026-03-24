@@ -2,8 +2,6 @@
 $deposit_requests = request_count('deposit_requests', true);
 $withdraw_requests = request_count('withdraw_requests', true);
 $member_requests = request_count('member_requests', true);
-$pending_loans = request_count('pending_loans', true);
-$upcomming_repayments = request_count('upcomming_repayments', true);
 $permissions = permission_list();
 @endphp
 
@@ -40,52 +38,10 @@ $permissions = permission_list();
 </li>
 
 <li>
-	<a href="javascript: void(0);"><i class="fas fa-hand-holding-usd"></i><span>{{ _lang('Loans') }} {!! xss_clean($pending_loans) !!}</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
-	<ul class="nav-second-level" aria-expanded="false">
-		@if (in_array('loans.index',$permissions))
-		<li class="nav-item"><a class="nav-link" href="{{ route('loans.index') }}">{{ _lang('All Loans') }}</a></li>
-		@endif
-
-		@if (in_array('loans.filter',$permissions))
-		<li class="nav-item">
-			<a class="nav-link" href="{{ route('loans.filter', 'pending') }}">
-				{{ _lang('Pending Loans') }}
-				{!! xss_clean($pending_loans) !!}
-			</a>
-		</li>
-		@endif
-
-		@if (in_array('loans.filter',$permissions))
-		<li class="nav-item"><a class="nav-link" href="{{ route('loans.filter', 'active') }}">{{ _lang('Active Loans') }}</a></li>
-		@endif
-
-		@if (in_array('loans.admin_calculator',$permissions))
-		<li class="nav-item"><a class="nav-link" href="{{ route('loans.admin_calculator') }}">{{ _lang('Loan Calculator') }}</a></li>
-		@endif
-
-		@if (in_array('custom_fields.index',$permissions))
-		<li class="nav-item"><a class="nav-link" href="{{ route('custom_fields.index', 'loans') }}">{{ _lang('Custom Fields') }}</a></li>
-		@endif
-	</ul>
-</li>
-
-@if (in_array('loans.upcoming_loan_repayments',$permissions))
-<li><a href="{{ route('loans.upcoming_loan_repayments') }}"><i class="fas fa-calendar-alt"></i><span>{{ _lang('Upcomming Payments') }}  {!! xss_clean($upcomming_repayments) !!}</span></a></li>
-@endif
-
-@if (in_array('loan_payments.index',$permissions))
-<li><a href="{{ route('loan_payments.index') }}"><i class="fas fa-receipt"></i><span>{{ _lang('Loan Repayments') }}</span></a></li>
-@endif
-
-<li>
 	<a href="javascript: void(0);"><i class="fas fa-landmark"></i><span>{{ _lang('Accounts') }}</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
 	<ul class="nav-second-level" aria-expanded="false">
 		@if (in_array('savings_accounts.index',$permissions))
 		<li class="nav-item"><a class="nav-link" href="{{ route('savings_accounts.index') }}">{{ _lang('Member Accounts') }}</a></li>
-		@endif
-
-		@if (in_array('interest_calculation.calculator',$permissions))
-		<li class="nav-item"><a class="nav-link" href="{{ route('interest_calculation.calculator') }}">{{ _lang('Interest Calculation') }}</a></li>
 		@endif
 	</ul>
 </li>
@@ -172,18 +128,6 @@ $permissions = permission_list();
 
 		@if (in_array('reports.account_balances',$permissions))
 		<li class="nav-item"><a class="nav-link" href="{{ route('reports.account_balances') }}">{{ _lang('Account Balance') }}</a></li>
-		@endif
-
-		@if (in_array('reports.loan_report',$permissions))
-		<li class="nav-item"><a class="nav-link" href="{{ route('reports.loan_report') }}">{{ _lang('Loan Report') }}</a></li>
-		@endif
-
-		@if (in_array('reports.loan_due_report',$permissions))
-		<li class="nav-item"><a class="nav-link" href="{{ route('reports.loan_due_report') }}">{{ _lang('Loan Due Report') }}</a></li>
-		@endif
-
-		@if (in_array('reports.loan_repayment_report',$permissions))
-		<li class="nav-item"><a class="nav-link" href="{{ route('reports.loan_repayment_report') }}">{{ _lang('Loan Repayment Report') }}</a></li>
 		@endif
 
 		@if (in_array('reports.transactions_report',$permissions))
