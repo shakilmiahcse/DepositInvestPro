@@ -88,21 +88,42 @@
         e.preventDefault();
         var id = $(this).data('id');
 
-        if (!confirm('{{ _lang('Mark this deposit as paid?') }}')) {
-            return;
-        }
+        Swal.fire({
+            title: '{{ _lang('Are you sure?') }}',
+            text: '{{ _lang('Mark this deposit as paid?') }}',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '{{ _lang('Yes, Mark Paid') }}',
+            cancelButtonText: '{{ _lang('Cancel') }}',
+        }).then(function (result) {
+            if (result.value) {
+                $.ajax({
+                    method: 'POST',
+                    url: '{{ url('admin/monthly_deposits') }}/' + id + '/mark_paid',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function (response) {
+                        if (response.result === 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                text: response.message,
+                                timer: 1600,
+                                showConfirmButton: false
+                            });
 
-        $.ajax({
-            method: 'POST',
-            url: '{{ url('admin/monthly_deposits') }}/' + id + '/mark_paid',
-            data: {
-                _token: '{{ csrf_token() }}'
-            },
-            success: function (response) {
-                if (response.result === 'success') {
-                    monthly_deposits_table.draw();
-                }
+                            monthly_deposits_table.draw();
+                        }
+                    }
+                });
             }
+        });
+    });
+
+    $(document).ajaxError(function () {
+        Swal.fire({
+            icon: 'error',
+            text: '{{ _lang('Something went wrong, please try again') }}'
         });
     });
 

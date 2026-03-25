@@ -7,9 +7,9 @@
             <div class="card-header d-flex align-items-center">
                 <span class="panel-title">{{ _lang('Monthly Deposits') }}</span>
                 @if($hasMissingDeposits)
-                <form method="post" action="{{ route('monthly_deposits.generate') }}" class="ml-auto">
+                <form method="post" action="{{ route('monthly_deposits.generate') }}" class="ml-auto generate-monthly-deposits-form">
                     @csrf
-                    <button type="submit" class="btn btn-primary btn-xs" onclick="return confirm('{{ _lang('Generate monthly deposits for') }} {{ $currentMonthLabel }}?')">
+                    <button type="submit" class="btn btn-primary btn-xs">
                         <i class="ti-reload"></i>&nbsp;{{ _lang('Generate Missing Deposits') }}
                     </button>
                 </form>
@@ -89,21 +89,61 @@
         e.preventDefault();
         var id = $(this).data('id');
 
-        if (!confirm('{{ _lang('Mark this deposit as paid?') }}')) {
-            return;
-        }
+        Swal.fire({
+            title: '{{ _lang('Are you sure?') }}',
+            text: '{{ _lang('Mark this deposit as paid?') }}',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '{{ _lang('Yes, Mark Paid') }}',
+            cancelButtonText: '{{ _lang('Cancel') }}',
+        }).then(function (result) {
+            if (result.value) {
+                $.ajax({
+                    method: 'POST',
+                    url: '{{ url('admin/monthly_deposits') }}/' + id + '/mark_paid',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function (response) {
+                        if (response.result === 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                text: response.message,
+                                timer: 1600,
+                                showConfirmButton: false
+                            });
 
-        $.ajax({
-            method: 'POST',
-            url: '{{ url('admin/monthly_deposits') }}/' + id + '/mark_paid',
-            data: {
-                _token: '{{ csrf_token() }}'
-            },
-            success: function (response) {
-                if (response.result === 'success') {
-                    monthly_deposits_table.draw();
-                }
+                            monthly_deposits_table.draw();
+                        }
+                    }
+                });
             }
+        });
+    });
+
+    $(document).on('submit', '.generate-monthly-deposits-form', function (e) {
+        e.preventDefault();
+
+        var form = this;
+
+        Swal.fire({
+            title: '{{ _lang('Are you sure?') }}',
+            text: '{{ _lang('Generate monthly deposits for') }} {{ $currentMonthLabel }}?',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: '{{ _lang('Yes, Generate') }}',
+            cancelButtonText: '{{ _lang('Cancel') }}',
+        }).then(function (result) {
+            if (result.value) {
+                form.submit();
+            }
+        });
+    });
+
+    $(document).ajaxError(function () {
+        Swal.fire({
+            icon: 'error',
+            text: '{{ _lang('Something went wrong, please try again') }}'
         });
     });
 

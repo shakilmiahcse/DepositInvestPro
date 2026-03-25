@@ -49,13 +49,17 @@ class MonthlyDepositController extends Controller {
                 return '<span class="badge badge-warning">' . _lang('Pending') . '</span>';
             })
             ->addColumn('action', function ($deposit) {
-                $action = '';
+                $action = '<div class="d-flex justify-content-center flex-wrap">';
 
                 if ($deposit->status === 'pending') {
-                    $action .= '<button class="btn btn-success btn-sm mark-paid" data-id="' . $deposit->id . '"><i class="ti-check"></i> ' . _lang('Mark Paid') . '</button>';
+                    $action .= '<button class="btn btn-success btn-sm mark-paid mr-1 mb-1" data-id="' . $deposit->id . '"><i class="ti-check"></i> ' . _lang('Mark Paid') . '</button>';
                 }
 
-                return $action;
+                if ($deposit->transaction_id) {
+                    $action .= '<a class="btn btn-outline-primary btn-sm mb-1" href="' . route('transactions.show', $deposit->transaction_id) . '" target="_blank"><i class="ti-eye"></i> ' . _lang('Details') . '</a>';
+                }
+
+                return $action . '</div>';
             })
             ->rawColumns(['status', 'action'])
             ->make(true);
