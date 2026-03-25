@@ -41,6 +41,13 @@
 							@endforeach
 						</tr>
 						<tr>
+							<td>{{ _lang('Profit') }}</td>
+							@foreach($currencies as $c)
+							<td class="text-right text-success pr-4">{{ isset($total_profit[$c->name]) ? '+ '. decimalPlace($total_profit[$c->name]->total_profit, currency($c->name)) : 0 }}</td>
+							@php $cash_in_hand[$c->name] += isset($total_profit[$c->name]) ? $total_profit[$c->name]->total_profit : 0; @endphp
+							@endforeach
+						</tr>
+						<tr>
 							<td>{{ _lang('Bank to Cash Deposit') }}</td>
 							@foreach($currencies as $c)
 							<td class="text-right text-success pr-4">{{ isset($bank_to_cash_deposit[$c->name]) ? '+ '. decimalPlace($bank_to_cash_deposit[$c->name]->bank_to_cash_deposit, currency($c->name)) : 0 }}</td>						

@@ -335,6 +335,16 @@ class ReportController extends Controller
             $data['total_withdraw'][$row->currency_name] = $row;
         }
 
+        $total_profit = DB::select("SELECT currency.name as currency_name, IFNULL(SUM(amount),0) as total_profit FROM transactions
+		JOIN savings_accounts ON savings_accounts.id = transactions.savings_account_id
+		JOIN savings_products ON savings_products.id = savings_accounts.savings_product_id
+		JOIN currency ON currency.id = savings_products.currency_id
+		WHERE transactions.type = 'Profit' AND transactions.status = 2 GROUP BY currency_name");
+
+        foreach ($total_profit as $row) {
+            $data['total_profit'][$row->currency_name] = $row;
+        }
+
         $total_cash_disbursement = DB::select("SELECT currency.name as currency_name, IFNULL(SUM(applied_amount),0) as total_cash_disbursement FROM loans
 		JOIN currency ON currency.id = loans.currency_id
 		WHERE loans.disburse_method = 'cash' AND (loans.status = 1 OR loans.status = 2) GROUP BY currency_name");
