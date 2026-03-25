@@ -5,18 +5,24 @@ namespace App\Http\Controllers;
 use App\Models\MonthlyDeposit;
 use App\Models\SavingsAccount;
 use App\Models\Transaction;
+use App\Services\MonthlyDepositService;
 use DataTables;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class MonthlyDepositController extends Controller {
+    protected MonthlyDepositService $monthlyDepositService;
 
-    public function __construct() {
+    public function __construct(MonthlyDepositService $monthlyDepositService) {
+        $this->monthlyDepositService = $monthlyDepositService;
         date_default_timezone_set(get_option('timezone', 'Asia/Dhaka'));
     }
 
     public function index() {
-        return view('backend.monthly_deposits.list');
+        $currentMonthLabel = now()->format('F Y');
+        $hasMissingDeposits = $this->monthlyDepositService->hasMissingForMonth(now());
+
+        return view('backend.monthly_deposits.list', compact('currentMonthLabel', 'hasMissingDeposits'));
     }
 
     public function get_table_data(Request $request, $account_id = null) {
@@ -92,5 +98,15 @@ class MonthlyDepositController extends Controller {
     public function history($account_id) {
         $account = SavingsAccount::with(['member', 'savings_type.currency'])->withoutGlobalScopes(['status'])->findOrFail($account_id);
         return view('backend.monthly_deposits.history', compact('account'));
+    }
+
+    public function generate() {
+        $created = $this->monthlyDepositService->generateForMonth(now());
+
+        if ($created > 0) {
+            return redirect()->route('monthly_deposits.index')->with('success', _lang('Monthly deposits generated successfully') . ': ' . $created);
+        }
+
+        return redirect()->route('monthly_deposits.index')->with('success', _lang('Monthly deposits already generated for this month'));
     }
 }

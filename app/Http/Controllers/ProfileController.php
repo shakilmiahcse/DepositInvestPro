@@ -63,27 +63,40 @@ class ProfileController extends Controller {
 
         DB::beginTransaction();
 
-        $profile        = Auth::user();
-        $profile->name  = $request->name;
-        $profile->email = $request->email;
-        if ($request->hasFile('profile_picture')) {
-            $image     = $request->file('profile_picture');
-            $file_name = "profile_" . time() . '.' . $image->getClientOriginalExtension();
-            Image::make($image)->crop(300, 300)->save(base_path('public/uploads/profile/') . $file_name);
-            $profile->profile_picture = $file_name;
+        try {
+            $profile        = Auth::user();
+            $profile->name  = $request->name;
+            $profile->email = $request->email;
+
+            if ($request->hasFile('profile_picture')) {
+                $image      = $request->file('profile_picture');
+                $file_name  = "profile_" . time() . '.' . $image->getClientOriginalExtension();
+                $uploadPath = public_path('uploads/profile');
+
+                if (! is_dir($uploadPath)) {
+                    mkdir($uploadPath, 0755, true);
+                }
+
+                Image::make($image)->crop(300, 300)->save($uploadPath . DIRECTORY_SEPARATOR . $file_name);
+                $profile->profile_picture = $file_name;
+            }
+
+            $profile->save();
+
+            //Update Contact
+            if ($profile->user_type == 'client') {
+                Contact::where('user_id', $profile->id)
+                    ->update(['contact_email' => $profile->email]);
+            }
+
+            DB::commit();
+
+            return redirect()->route('profile.index')->with('success', _lang('Information has been updated'));
+        } catch (\Throwable $e) {
+            DB::rollBack();
+
+            throw $e;
         }
-
-        $profile->save();
-
-        //Update Contact
-        if ($profile->user_type == 'client') {
-            $contact = Contact::where('user_id', $profile->id)
-                ->update(['contact_email' => $profile->email]);
-        }
-
-        DB::commit();
-
-        return redirect()->route('profile.index')->with('success', _lang('Information has been updated'));
     }
 
     /**

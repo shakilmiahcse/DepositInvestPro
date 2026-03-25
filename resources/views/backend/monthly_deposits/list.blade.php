@@ -6,6 +6,14 @@
         <div class="card no-export">
             <div class="card-header d-flex align-items-center">
                 <span class="panel-title">{{ _lang('Monthly Deposits') }}</span>
+                @if($hasMissingDeposits)
+                <form method="post" action="{{ route('monthly_deposits.generate') }}" class="ml-auto">
+                    @csrf
+                    <button type="submit" class="btn btn-primary btn-xs" onclick="return confirm('{{ _lang('Generate monthly deposits for') }} {{ $currentMonthLabel }}?')">
+                        <i class="ti-reload"></i>&nbsp;{{ _lang('Generate Missing Deposits') }}
+                    </button>
+                </form>
+                @endif
             </div>
             <div class="card-body">
                 <table id="monthly_deposits_table" class="table table-bordered">
