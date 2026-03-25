@@ -18,6 +18,15 @@ class FundService
             ->sum('amount');
     }
 
+    public function getTotalProfits()
+    {
+        return (float) Transaction::whereNotNull('savings_account_id')
+            ->where('dr_cr', 'cr')
+            ->where('status', 2)
+            ->where('type', 'Profit')
+            ->sum('amount');
+    }
+
     public function getTotalAccountWithdrawals()
     {
         return (float) Transaction::whereNotNull('savings_account_id')
@@ -60,7 +69,7 @@ class FundService
 
     public function getAvailableBalance($excludedInvestmentId = null)
     {
-        return (float) ($this->getTotalAccountDeposits() - $this->getTotalInvested($excludedInvestmentId)) - $this->getTotalAccountWithdrawals() - $this->getTotalExpenses();
+        return (float) ($this->getTotalAccountDeposits() - $this->getTotalInvested($excludedInvestmentId)) - $this->getTotalAccountWithdrawals() - $this->getTotalExpenses() + $this->getTotalProfits();
     }
 
     public function hasSufficientFunds($amount, $excludedInvestmentId = null)
@@ -70,7 +79,7 @@ class FundService
 
     public function getFundSummary($excludedInvestmentId = null)
     {
-        $totalAccountDeposits = $this->getTotalAccountDeposits() - $this->getTotalAccountWithdrawals() - $this->getTotalExpenses();
+        $totalAccountDeposits = $this->getTotalAccountDeposits() - $this->getTotalAccountWithdrawals() - $this->getTotalExpenses() + $this->getTotalProfits();
         $totalInvested        = $this->getTotalInvested($excludedInvestmentId);
 
         return [
