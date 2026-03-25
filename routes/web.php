@@ -41,6 +41,7 @@ use App\Http\Controllers\WithdrawRequestController;
 use App\Http\Controllers\TransactionCategoryController;
 use App\Http\Controllers\NotificationTemplateController;
 use App\Http\Controllers\MonthlyDepositController;
+use App\Http\Controllers\ProfitDistributionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -203,6 +204,10 @@ Route::group(['middleware' => ['install']], function () {
                 Route::get('investments/{investment_id}/transactions', [InvestmentController::class, 'listTransactions'])->name('investments.transactions.index');
                 Route::match(['get', 'post'], 'investments/{investment_id}/transactions/add', [InvestmentController::class, 'addTransaction'])->name('investments.transactions.add');
                 Route::resource('investments', InvestmentController::class)->middleware("demo:PUT|PATCH|DELETE");
+
+                //Profit Distribution
+                Route::get('profit_distributions', [ProfitDistributionController::class, 'distributionHistory'])->name('profit_distributions.history');
+                Route::post('profit_distributions/distribute', [ProfitDistributionController::class, 'distributeProfit'])->name('profit_distributions.distribute')->middleware('demo');
 
                 if (config('features.loan_enabled')) {
                     //Interest Controller

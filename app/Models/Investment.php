@@ -30,6 +30,23 @@ class Investment extends Model
         return $this->hasMany(InvestmentTransaction::class, 'investment_id');
     }
 
+    public function profit_distribution()
+    {
+        return $this->hasOne(ProfitDistribution::class, 'investment_id');
+    }
+
+    public function profit_distribution_details()
+    {
+        return $this->hasManyThrough(
+            ProfitDistributionDetail::class,
+            ProfitDistribution::class,
+            'investment_id',
+            'profit_distribution_id',
+            'id',
+            'id'
+        );
+    }
+
     public function getTotalInvestedAttribute()
     {
         return (float) $this->transactions()
@@ -53,6 +70,6 @@ class Investment extends Model
 
     public function getNetProfitAttribute()
     {
-        return $this->total_return - $this->total_invested - $this->total_expense;
+        return (float) $this->total_return - (float) $this->invested_amount - (float) $this->total_invested - (float) $this->total_expense;
     }
 }

@@ -73,6 +73,10 @@ $member_requests = request_count('member_requests', true);
 </li>
 
 <li>
+	<a href="{{ route('profit_distributions.history') }}"><i class="fas fa-hand-holding-usd"></i><span>{{ _lang('Profit Distribution') }}</span></a>
+</li>
+
+<li>
 	<a href="javascript: void(0);"><i class="fas fa-money-bill-wave"></i><span>{{ _lang('Expense') }}</span><span class="menu-arrow"><i class="mdi mdi-chevron-right"></i></span></a>
 	<ul class="nav-second-level" aria-expanded="false">
 		<li class="nav-item"><a class="nav-link" href="{{ route('expenses.index') }}">{{ _lang('All Expense') }}</a></li>

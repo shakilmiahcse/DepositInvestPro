@@ -58,4 +58,8 @@ class SavingsAccount extends Model {
     public function monthly_deposits() {
         return $this->hasMany('App\Models\MonthlyDeposit', 'account_id');
     }
+
+    public function profit_distribution_details() {
+        return $this->hasMany('App\Models\ProfitDistributionDetail', 'account_id');
+    }
 }

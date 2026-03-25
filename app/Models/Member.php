@@ -53,4 +53,8 @@ class Member extends Model {
     public function monthly_deposits() {
         return $this->hasMany('App\Models\MonthlyDeposit', 'member_id');
     }
+
+    public function profit_distribution_details() {
+        return $this->hasMany('App\Models\ProfitDistributionDetail', 'member_id');
+    }
 }
