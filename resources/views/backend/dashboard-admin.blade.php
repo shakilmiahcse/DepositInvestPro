@@ -180,7 +180,7 @@
 							@endif
 							@foreach($investments as $investment)
 								@php
-									$totalInvested = (float) ($investment->total_invested_sum ?? 0);
+									$totalInvested = (float) ($investment->total_invested_sum ?? 0) + (float) ($investment->invested_amount ?? 0);
 									$totalReturn = (float) ($investment->total_return_sum ?? 0);
 									$totalExpense = (float) ($investment->total_expense_sum ?? 0);
 									$profit = $totalReturn - $totalInvested - $totalExpense;
