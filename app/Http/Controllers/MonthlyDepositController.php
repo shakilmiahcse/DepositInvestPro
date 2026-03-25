@@ -34,10 +34,10 @@ class MonthlyDepositController extends Controller {
 
         return Datatables::eloquent($deposits)
             ->editColumn('member.first_name', function ($deposit) {
-                return $deposit->member->first_name . ' ' . $deposit->member->last_name;
+                return '<a href="' . route('members.show', $deposit->member->id) . '">' . $deposit->member->first_name . ' ' . $deposit->member->last_name . '</a> ';
             })
             ->editColumn('account.account_number', function ($deposit) {
-                return $deposit->account->account_number;
+                return '<a href="' . route('savings_accounts.show', $deposit->account->id) . '">' . $deposit->account->account_number . '</a>';
             })
             ->editColumn('month', function ($deposit) {
                 return date('F', mktime(0, 0, 0, $deposit->month, 1));
@@ -61,7 +61,7 @@ class MonthlyDepositController extends Controller {
 
                 return $action . '</div>';
             })
-            ->rawColumns(['status', 'action'])
+            ->rawColumns(['status', 'action', 'member.first_name', 'account.account_number'])
             ->make(true);
     }
 
