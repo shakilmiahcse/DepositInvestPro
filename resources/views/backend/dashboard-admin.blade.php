@@ -89,7 +89,7 @@
 	<div class="col-xl-3 col-md-6 mb-4">
 		<div class="card h-100 border-left-danger">
 			<div class="card-body">
-				<h6 class="text-muted mb-2">{{ _lang('Total Expenses') }}</h6>
+				<h6 class="text-muted mb-2">{{ _lang('Total Investment Expenses') }}</h6>
 				<h4 class="mb-0">{{ decimalPlace($investment_total_expenses, currency()) }}</h4>
 			</div>
 		</div>

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Investment;
 use App\Models\InvestmentTransaction;
 use App\Models\Transaction;
+use Illuminate\Support\Facades\DB;
 
 class FundService
 {
@@ -15,6 +16,20 @@ class FundService
             ->where('status', 2)
             ->where('type', 'Deposit')
             ->sum('amount');
+    }
+
+    public function getTotalAccountWithdrawals()
+    {
+        return (float) Transaction::whereNotNull('savings_account_id')
+            ->where('dr_cr', 'dr')
+            ->where('status', 2)
+            ->where('type', 'Withdraw')
+            ->sum('amount');
+    }
+
+    public function getTotalExpenses()
+    {
+        return (float) DB::select("SELECT IFNULL(SUM(amount),0) as total_expense FROM expenses")[0]->total_expense;
     }
 
     public function getTotalBaseInvested($excludedInvestmentId = null)
@@ -45,7 +60,7 @@ class FundService
 
     public function getAvailableBalance($excludedInvestmentId = null)
     {
-        return (float) ($this->getTotalAccountDeposits() - $this->getTotalInvested($excludedInvestmentId));
+        return (float) ($this->getTotalAccountDeposits() - $this->getTotalInvested($excludedInvestmentId)) - $this->getTotalAccountWithdrawals() - $this->getTotalExpenses();
     }
 
     public function hasSufficientFunds($amount, $excludedInvestmentId = null)
@@ -55,7 +70,7 @@ class FundService
 
     public function getFundSummary($excludedInvestmentId = null)
     {
-        $totalAccountDeposits = $this->getTotalAccountDeposits();
+        $totalAccountDeposits = $this->getTotalAccountDeposits() - $this->getTotalAccountWithdrawals() - $this->getTotalExpenses();
         $totalInvested        = $this->getTotalInvested($excludedInvestmentId);
 
         return [
