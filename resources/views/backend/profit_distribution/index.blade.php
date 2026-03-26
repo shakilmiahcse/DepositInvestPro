@@ -7,7 +7,11 @@
             <div class="col-md-6">
                 <div class="card">
                     <div class="card-body">
-                        <h6 class="text-muted">{{ _lang('Total Member Deposits') }}</h6>
+                        <h6 class="text-muted mb-1">
+                            {{ _lang('Eligible Member Balance') }}
+                            <i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" title="{{ _lang('Used for profit sharing. Formula: Total Credits - Total Debits for each savings account, then only positive balances are added') }}"></i>
+                        </h6>
+                        <div class="small text-muted mb-2">{{ _lang('Current positive savings balances used for profit distribution') }}</div>
                         <h4 class="mb-0">{{ decimalPlace($totalMemberDeposits, currency()) }}</h4>
                     </div>
                 </div>
@@ -180,6 +184,7 @@
     $(document).on('input', '#total_profit', updateProfitInfo);
 
     updateProfitInfo();
+    $('[data-toggle="tooltip"]').tooltip();
 })(jQuery);
 </script>
 @endsection

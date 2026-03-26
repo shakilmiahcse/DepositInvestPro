@@ -3,7 +3,11 @@
 	<div class="row px-2">
 		<div class="col-md-12">
 			<div class="alert alert-info">
-				<div><strong>{{ _lang('Total Account Deposits') }}:</strong> {{ decimalPlace($fundSummary['total_account_deposits'], currency()) }}</div>
+				<div>
+					<strong>{{ _lang('Net Fund Balance') }}:</strong> {{ decimalPlace($fundSummary['total_account_deposits'], currency()) }}
+					<i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" title="{{ _lang('Used for investment funding. Formula: Deposits - Withdrawals - Expenses + Profit') }}"></i>
+				</div>
+				<div class="small text-muted mb-1">{{ _lang('Used as the fund pool for investments') }}</div>
 				<div><strong>{{ _lang('Total Invested') }}:</strong> {{ decimalPlace($fundSummary['total_invested'], currency()) }}</div>
 				<div><strong>{{ _lang('Available Balance') }}:</strong> <span id="available_balance">{{ decimalPlace($fundSummary['available_balance'], currency()) }}</span></div>
 			</div>
@@ -85,5 +89,6 @@
 
 	$(document).on("input", "input[name='invested_amount']", toggleInvestmentWarning);
 	toggleInvestmentWarning();
+	$('[data-toggle="tooltip"]').tooltip();
 })(jQuery);
 </script>

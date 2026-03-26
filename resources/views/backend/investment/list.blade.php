@@ -16,7 +16,11 @@
 			<div class="col-md-4">
 				<div class="card">
 					<div class="card-body">
-						<h6 class="text-muted">{{ _lang('Total Account Deposits') }}</h6>
+						<h6 class="text-muted mb-1">
+							{{ _lang('Net Fund Balance') }}
+							<i class="fas fa-info-circle text-info ml-1" data-toggle="tooltip" title="{{ _lang('Used for investment funding. Formula: Deposits - Withdrawals - Expenses + Profit') }}"></i>
+						</h6>
+						<div class="small text-muted mb-2">{{ _lang('Used as the fund pool for investments') }}</div>
 						<h4 class="mb-0">{{ decimalPlace($fundSummary['total_account_deposits'], currency()) }}</h4>
 					</div>
 				</div>
@@ -110,4 +114,14 @@
 		</div>
 	</div>
 </div>
+@endsection
+
+@section('js-script')
+<script>
+(function ($) {
+	"use strict";
+
+	$('[data-toggle="tooltip"]').tooltip();
+})(jQuery);
+</script>
 @endsection
