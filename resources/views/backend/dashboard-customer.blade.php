@@ -20,7 +20,7 @@
 								<th class="text-nowrap text-right pr-4">{{ _lang('Current Balance') }}</th>
 							</tr>
 						</thead>
-						<tbdashboard-customer.blade.phpody>
+						<tbody>
 							@foreach(get_account_details(auth()->user()->member->id) as $account)
 							<tr>
 								<td class="pl-4">{{ $account->account_number }}</td>
@@ -34,6 +34,147 @@
 						</tbody>
 					</table>
 				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xl-12">
+		<div class="card mb-4">
+			<div class="card-header">
+				{{ _lang('Investment Summary') }}
+			</div>
+			<div class="card-body">
+				<div class="row">
+					<div class="col-md-3 col-sm-6 mb-3">
+						<div class="card h-100 border-left-primary">
+							<div class="card-body">
+								<h6 class="text-muted mb-2">{{ _lang('Total Investments') }}</h6>
+								<h4 class="mb-0">{{ $investment_total_count }}</h4>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-3 col-sm-6 mb-3">
+						<div class="card h-100 border-left-success">
+							<div class="card-body">
+								<h6 class="text-muted mb-2">{{ _lang('Active Investments') }}</h6>
+								<h4 class="mb-0">{{ $investment_active_count }}</h4>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-3 col-sm-6 mb-3">
+						<div class="card h-100 border-left-info">
+							<div class="card-body">
+								<h6 class="text-muted mb-2">{{ _lang('Total Invested Amount') }}</h6>
+								<h4 class="mb-0">{{ decimalPlace($investment_total_invested, currency()) }}</h4>
+							</div>
+						</div>
+					</div>
+
+					<div class="col-md-3 col-sm-6 mb-3">
+						<div class="card h-100 border-left-warning">
+							<div class="card-body">
+								<h6 class="text-muted mb-2">{{ _lang('Your Profit Received') }}</h6>
+								<h4 class="mb-0">{{ decimalPlace($member_investment_profit, currency()) }}</h4>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="table-responsive">
+					<table class="table table-bordered mb-0">
+						<thead>
+							<tr>
+								<th class="pl-4">{{ _lang('Investment') }}</th>
+								<th>{{ _lang('Invested Amount') }}</th>
+								<th>{{ _lang('Expected Return') }}</th>
+								<th>{{ _lang('Start Date') }}</th>
+								<th class="pr-4">{{ _lang('Status') }}</th>
+							</tr>
+						</thead>
+						<tbody>
+							@if($recent_investments->isEmpty())
+								<tr>
+									<td colspan="5" class="text-center">{{ _lang('No investment data available') }}</td>
+								</tr>
+							@endif
+
+							@foreach($recent_investments as $investment)
+								<tr>
+									<td class="pl-4">{{ $investment->name }}</td>
+									<td>{{ decimalPlace($investment->invested_amount, currency()) }}</td>
+									<td>{{ $investment->expected_return !== null ? decimalPlace($investment->expected_return, currency()) : _lang('N/A') }}</td>
+									<td>{{ $investment->start_date ? $investment->start_date->format(get_option('date_format','Y-m-d')) : '-' }}</td>
+									<td class="pr-4">{!! $investment->status === 'active' ? xss_clean(show_status(_lang('Active'), 'success')) : xss_clean(show_status(_lang('Completed'), 'info')) !!}</td>
+								</tr>
+							@endforeach
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="row">
+	<div class="col-xl-12">
+		<div class="card mb-4">
+			<div class="card-header">
+				{{ _lang('Monthly Deposit Overview') }}
+			</div>
+			<div class="card-body px-0 pt-0">
+				@if($accounts->isEmpty())
+					<div class="alert alert-info m-3 mb-0">
+						{{ _lang('No savings account found') }}
+					</div>
+				@else
+					<div class="table-responsive">
+						<table class="table table-bordered mb-0">
+							<thead>
+								<tr>
+									<th class="pl-4">{{ _lang('Account Number') }}</th>
+									<th>{{ _lang('Monthly Deposit') }}</th>
+									<th>{{ _lang('Month') }}</th>
+									<th>{{ _lang('Year') }}</th>
+									<th>{{ _lang('Status') }}</th>
+									<th class="pr-4">{{ _lang('Paid Date') }}</th>
+								</tr>
+							</thead>
+							<tbody>
+								@php $hasMonthlyDeposits = false; @endphp
+								@foreach($accounts as $account)
+									@forelse($account->monthly_deposits as $deposit)
+										@php $hasMonthlyDeposits = true; @endphp
+										<tr>
+											<td class="pl-4">{{ $account->account_number }}</td>
+											<td>{{ decimalPlace($account->monthly_deposit_amount, currency($account->savings_type->currency->name)) }}</td>
+											<td>{{ date('F', mktime(0, 0, 0, $deposit->month, 1)) }}</td>
+											<td>{{ $deposit->year }}</td>
+											<td>
+												@if($deposit->status === 'pending')
+													<span class="badge badge-warning">{{ _lang('Pending') }}</span>
+                                                @else
+                                                    <span class="badge badge-success">{{ _lang('Paid')}}</span>
+												@endif
+											</td>
+											<td class="pr-4">{{ $deposit->paid_date ? \Carbon\Carbon::parse($deposit->paid_date)->format(get_option('date_format','Y-m-d')) : '-' }}</td>
+										</tr>
+									@empty
+									@endforelse
+								@endforeach
+
+								@if($hasMonthlyDeposits === false)
+									<tr>
+										<td colspan="7" class="text-center">{{ _lang('No monthly deposit records found') }}</td>
+									</tr>
+								@endif
+							</tbody>
+						</table>
+					</div>
+				@endif
 			</div>
 		</div>
 	</div>

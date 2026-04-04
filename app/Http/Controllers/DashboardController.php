@@ -6,6 +6,8 @@ use App\Models\Investment;
 use App\Models\InvestmentTransaction;
 use App\Models\Loan;
 use App\Models\Member;
+use App\Models\ProfitDistributionDetail;
+use App\Models\SavingsAccount;
 use App\Models\Expense;
 use App\Models\Transaction;
 use App\Models\LoanRepayment;
@@ -39,6 +41,21 @@ class DashboardController extends Controller {
                 ->orderBy('trans_date', 'desc')
                 ->get();
             $data['loans'] = Loan::where('status', 1)->where('borrower_id', $user->member->id)->get();
+            $data['accounts'] = SavingsAccount::with([
+                'savings_type.currency',
+                'monthly_deposits' => function ($query) {
+                    $query->orderByDesc('year')->orderByDesc('month');
+                },
+            ])->where('member_id', $user->member->id)->get();
+            $data['investment_total_count'] = Investment::count();
+            $data['investment_active_count'] = Investment::where('status', 'active')->count();
+            $data['investment_total_invested'] = (float) Investment::sum('invested_amount');
+            $data['investment_total_returns'] = (float) InvestmentTransaction::where('type', 'return')->sum('amount');
+            $data['member_investment_profit'] = (float) ProfitDistributionDetail::where('member_id', $user->member->id)->sum('profit_amount');
+            $data['recent_investments'] = Investment::orderByDesc('start_date')
+                ->orderByDesc('id')
+                ->limit(5)
+                ->get();
         } else {
             $data['recent_transactions'] = Transaction::limit('10')
                 ->orderBy('trans_date', 'desc')
