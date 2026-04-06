@@ -17,8 +17,12 @@
 					</div>
 				</div>
 			</div>
-			
+
 			<div class="card-body">
+				<div class="receipt-header text-center mb-4">
+					<h4>{{ get_option('company_name') }}</h4>
+				</div>
+
 			    <table class="table table-bordered">
 				    <tr><td>{{ _lang('Date') }}</td><td>{{ $transaction->trans_date }}</td></tr>
 					<tr><td>{{ _lang('Member') }}</td><td>{{ $transaction->member->first_name.' '.$transaction->member->last_name }}</td></tr>
@@ -64,6 +68,7 @@
 				<div id="receipt" class="print-only">
 					<div class="receipt-header text-center">
 						<img src="{{ get_logo() }}" class="logo" alt="logo"/>
+						<h4>{{ get_option('company_name') }}</h4>
 						<p>{{ _lang('Transaction Receipt') }}</p>
 						<p>{{ get_option('address') }}</p>
 						<p>{{ get_option('email') }}, {{ get_option('phone') }}</p>

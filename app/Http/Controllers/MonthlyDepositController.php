@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\MonthlyDeposit;
 use App\Models\SavingsAccount;
 use App\Models\Transaction;
+use App\Notifications\DepositMoney;
 use App\Services\MonthlyDepositService;
 use DataTables;
 use Illuminate\Http\Request;
@@ -95,6 +96,11 @@ class MonthlyDepositController extends Controller {
         $deposit->save();
 
         DB::commit();
+
+        try {
+            $transaction->loadMissing(['member', 'account.savings_type.currency']);
+            $transaction->member->notify(new DepositMoney($transaction));
+        } catch (\Exception $e) {}
 
         return response()->json(['result' => 'success', 'message' => _lang('Marked as paid'), 'id' => $deposit->id]);
     }
