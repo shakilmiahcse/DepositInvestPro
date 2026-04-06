@@ -6,6 +6,7 @@ use App\Models\MonthlyDeposit;
 use App\Models\SavingsAccount;
 use App\Models\Transaction;
 use App\Notifications\DepositMoney;
+use App\Notifications\MonthlyDepositReminder;
 use App\Services\MonthlyDepositService;
 use DataTables;
 use Illuminate\Http\Request;
@@ -53,6 +54,7 @@ class MonthlyDepositController extends Controller {
                 $action = '<div class="d-flex justify-content-center flex-wrap">';
 
                 if ($deposit->status === 'pending') {
+                    $action .= '<button class="btn btn-warning btn-sm send-reminder mr-1 mb-1" data-id="' . $deposit->id . '"><i class="ti-bell"></i> ' . _lang('Send Reminder') . '</button>';
                     $action .= '<button class="btn btn-success btn-sm mark-paid mr-1 mb-1" data-id="' . $deposit->id . '"><i class="ti-check"></i> ' . _lang('Mark Paid') . '</button>';
                 }
 
@@ -103,6 +105,22 @@ class MonthlyDepositController extends Controller {
         } catch (\Exception $e) {}
 
         return response()->json(['result' => 'success', 'message' => _lang('Marked as paid'), 'id' => $deposit->id]);
+    }
+
+    public function remind($id) {
+        $deposit = MonthlyDeposit::with(['member', 'account.savings_type.currency'])->findOrFail($id);
+
+        if ($deposit->status !== 'pending') {
+            return response()->json(['result' => 'error', 'message' => _lang('Reminder can only be sent for pending deposits')], 422);
+        }
+
+        try {
+            $deposit->member->notify(new MonthlyDepositReminder($deposit));
+        } catch (\Exception $e) {
+            return response()->json(['result' => 'error', 'message' => _lang('Failed to send reminder')], 500);
+        }
+
+        return response()->json(['result' => 'success', 'message' => _lang('Reminder sent successfully')]);
     }
 
     public function history($account_id) {

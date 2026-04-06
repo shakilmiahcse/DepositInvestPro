@@ -196,6 +196,7 @@ Route::group(['middleware' => ['install']], function () {
                 //Monthly Deposits
                 Route::get('monthly_deposits/get_table_data/{account_id?}', [MonthlyDepositController::class, 'get_table_data']);
                 Route::post('monthly_deposits/generate', [MonthlyDepositController::class, 'generate'])->name('monthly_deposits.generate')->middleware('demo');
+                Route::post('monthly_deposits/{id}/remind', [MonthlyDepositController::class, 'remind'])->name('monthly_deposits.remind');
                 Route::post('monthly_deposits/{id}/mark_paid', [MonthlyDepositController::class, 'mark_paid'])->name('monthly_deposits.mark_paid');
                 Route::get('monthly_deposits/account/{account_id}', [MonthlyDepositController::class, 'history'])->name('monthly_deposits.history');
                 Route::resource('monthly_deposits', MonthlyDepositController::class)->only(['index']);

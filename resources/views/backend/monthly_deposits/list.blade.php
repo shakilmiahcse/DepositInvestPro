@@ -121,6 +121,38 @@
         });
     });
 
+    $(document).on('click', '.send-reminder', function (e) {
+        e.preventDefault();
+        var id = $(this).data('id');
+
+        Swal.fire({
+            title: '{{ _lang('Are you sure?') }}',
+            text: '{{ _lang('Send reminder for this pending deposit?') }}',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: '{{ _lang('Yes, Send Reminder') }}',
+            cancelButtonText: '{{ _lang('Cancel') }}',
+        }).then(function (result) {
+            if (result.value) {
+                $.ajax({
+                    method: 'POST',
+                    url: '{{ url('admin/monthly_deposits') }}/' + id + '/remind',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                    success: function (response) {
+                        Swal.fire({
+                            icon: response.result,
+                            text: response.message,
+                            timer: 1600,
+                            showConfirmButton: false
+                        });
+                    }
+                });
+            }
+        });
+    });
+
     $(document).on('submit', '.generate-monthly-deposits-form', function (e) {
         e.preventDefault();
 
