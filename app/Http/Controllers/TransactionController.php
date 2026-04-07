@@ -32,7 +32,16 @@ class TransactionController extends Controller
      */
     public function index()
     {
-        return view('backend.transaction.list');
+        return view('backend.transaction.list', [
+            'request_type' => request('type'),
+        ]);
+    }
+
+    public function transfer_requests()
+    {
+        return view('backend.transaction.list', [
+            'request_type' => 'transfer_requests',
+        ]);
     }
 
     public function get_table_data()
@@ -41,6 +50,13 @@ class TransactionController extends Controller
         $transactions = Transaction::select('transactions.*')
             ->with(['member', 'account', 'account.savings_type'])
             ->orderBy("transactions.trans_date", "desc");
+
+        if (request('type') == 'transfer_requests') {
+            $transactions->where('transactions.type', 'Transfer')
+                ->where('transactions.dr_cr', 'dr')
+                ->whereNull('transactions.parent_id')
+                ->where('transactions.status', 0);
+        }
 
         return Datatables::eloquent($transactions)
             ->editColumn('member.first_name', function ($transactions) {
@@ -339,7 +355,7 @@ class TransactionController extends Controller
                 if ($creditTransaction) {
                     try {
                         $creditTransaction->member->notify(new TransferMoney($creditTransaction));
-                    } catch (\Exception $e) {}
+                    } catch (\Throwable $e) {}
                 }
             }
         }
@@ -404,7 +420,7 @@ class TransactionController extends Controller
         if ($creditTransaction) {
             try {
                 $creditTransaction->member->notify(new TransferMoney($creditTransaction));
-            } catch (\Exception $e) {}
+            } catch (\Throwable $e) {}
         }
 
         DB::commit();

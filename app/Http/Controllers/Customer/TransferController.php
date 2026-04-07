@@ -297,8 +297,14 @@ class TransferController extends Controller {
 		$member_id = auth()->user()->member->id;
 		$deposit_requests = DepositRequest::where('member_id', $member_id)->get();
 		$withdraw_requests = WithdrawRequest::where('member_id', $member_id)->get();
+		$transfer_requests = Transaction::where('member_id', $member_id)
+			->where('type', 'Transfer')
+			->where('dr_cr', 'dr')
+			->whereNull('parent_id')
+			->orderBy('created_at', 'desc')
+			->get();
 
-		return view('backend.customer_portal.transaction-requests', compact('deposit_requests', 'withdraw_requests'));
+		return view('backend.customer_portal.transaction-requests', compact('deposit_requests', 'withdraw_requests', 'transfer_requests'));
 	}
 
 	public function get_exchange_amount($from, $to, $amount) {

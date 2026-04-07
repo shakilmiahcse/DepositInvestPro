@@ -5,8 +5,10 @@
 	<div class="col-lg-12">
 		<div class="card no-export">
 		    <div class="card-header d-flex align-items-center">
-				<span class="panel-title">{{ _lang('Transaction History') }}</span>
+				<span class="panel-title">{{ isset($request_type) && $request_type == 'transfer_requests' ? _lang('Transfer Requests') : _lang('Transaction History') }}</span>
+				@if (!isset($request_type) || $request_type != 'transfer_requests')
 				<a class="btn btn-primary btn-xs ml-auto" href="{{ route('transactions.create') }}"><i class="ti-plus"></i>&nbsp;{{ _lang('Add New') }}</a>
+				@endif
 			</div>
 			<div class="card-body">
 				<table id="transactions_table" class="table table-bordered">
@@ -40,7 +42,7 @@
 	$('#transactions_table').DataTable({
 		processing: true,
 		serverSide: true,
-		ajax: '{{ url('admin/transactions/get_table_data') }}',
+		ajax: '{{ url('admin/transactions/get_table_data') }}{{ isset($request_type) && $request_type == 'transfer_requests' ? '?type=transfer_requests' : '' }}',
 		"columns" : [
 			{ data : 'trans_date', name : 'trans_date' },
 			{ data : 'member.first_name', name : 'member.first_name' },

@@ -219,6 +219,7 @@ Route::group(['middleware' => ['install']], function () {
 
                 //Transaction
                 Route::get('transactions/get_table_data', [TransactionController::class, 'get_table_data']);
+                Route::get('transactions/transfer_requests', [TransactionController::class, 'transfer_requests'])->name('transactions.transfer_requests');
                 Route::get('transactions/approve_transfer/{id}', [TransactionController::class, 'approve_transfer'])->name('transactions.approve_transfer');
                 Route::get('transactions/reject_transfer/{id}', [TransactionController::class, 'reject_transfer'])->name('transactions.reject_transfer');
                 Route::resource('transactions', TransactionController::class);

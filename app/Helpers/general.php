@@ -788,6 +788,12 @@ if (! function_exists('request_count')) {
             $notification_count = \App\Models\DepositRequest::where('status', 0)->count();
         } else if ($request == 'withdraw_requests') {
             $notification_count = \App\Models\WithdrawRequest::where('status', 0)->count();
+        } else if ($request == 'transfer_requests') {
+            $notification_count = \App\Models\Transaction::where('type', 'Transfer')
+                ->where('dr_cr', 'dr')
+                ->whereNull('parent_id')
+                ->where('status', 0)
+                ->count();
         } else if ($request == 'member_requests') {
             $notification_count = \App\Models\Member::withoutGlobalScopes(['status'])->where('status', 0)->count();
         } else if ($request == 'upcomming_repayments') {

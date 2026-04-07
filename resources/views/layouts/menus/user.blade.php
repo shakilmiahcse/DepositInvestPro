@@ -1,6 +1,7 @@
 @php
 $deposit_requests = request_count('deposit_requests', true);
 $withdraw_requests = request_count('withdraw_requests', true);
+$transfer_requests = request_count('transfer_requests', true);
 $member_requests = request_count('member_requests', true);
 $permissions = permission_list();
 @endphp
@@ -89,6 +90,9 @@ $permissions = permission_list();
 		@endif
 		@if (in_array('transactions.index',$permissions))
 		<li class="nav-item"><a class="nav-link" href="{{ route('transactions.index') }}">{{ _lang('Transaction History') }}</a></li>
+		@endif
+		@if (in_array('transactions.index',$permissions))
+		<li class="nav-item"><a class="nav-link" href="{{ route('transactions.transfer_requests') }}">{{ _lang('Transfer Requests') }} {!! xss_clean($transfer_requests) !!}</a></li>
 		@endif
 	</ul>
 </li>

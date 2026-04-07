@@ -1,6 +1,7 @@
 @php
 $deposit_requests = request_count('deposit_requests', true);
 $withdraw_requests = request_count('withdraw_requests', true);
+$transfer_requests = request_count('transfer_requests', true);
 $member_requests = request_count('member_requests', true);
 @endphp
 
@@ -64,6 +65,7 @@ $member_requests = request_count('member_requests', true);
 	<ul class="nav-second-level" aria-expanded="false">
 		<li class="nav-item"><a class="nav-link" href="{{ route('transactions.create') }}">{{ _lang('New Transaction') }}</a></li>
 		<li class="nav-item"><a class="nav-link" href="{{ route('transactions.index') }}">{{ _lang('Transaction History') }}</a></li>
+		<li class="nav-item"><a class="nav-link" href="{{ route('transactions.transfer_requests') }}">{{ _lang('Transfer Requests') }} {!! xss_clean($transfer_requests) !!}</a></li>
 		<li class="nav-item"><a class="nav-link" href="{{ route('transaction_categories.index') }}">{{ _lang('Transaction Categories') }}</a></li>
 	</ul>
 </li>
