@@ -23,8 +23,16 @@ class MonthlyDepositController extends Controller {
     public function index() {
         $currentMonthLabel = now()->format('F Y');
         $hasMissingDeposits = $this->monthlyDepositService->hasMissingForMonth(now());
+        $availableYears = MonthlyDeposit::select('year')
+            ->distinct()
+            ->orderBy('year', 'desc')
+            ->pluck('year');
 
-        return view('backend.monthly_deposits.list', compact('currentMonthLabel', 'hasMissingDeposits'));
+        if ($availableYears->isEmpty()) {
+            $availableYears = collect([now()->year]);
+        }
+
+        return view('backend.monthly_deposits.list', compact('currentMonthLabel', 'hasMissingDeposits', 'availableYears'));
     }
 
     public function get_table_data(Request $request, $account_id = null) {
@@ -33,6 +41,20 @@ class MonthlyDepositController extends Controller {
         if ($account_id) {
             $deposits->where('account_id', $account_id);
         }
+
+        if ($request->filled('status') && in_array($request->status, ['pending', 'paid'])) {
+            $deposits->where('status', $request->status);
+        }
+
+        if ($request->filled('month') && is_numeric($request->month)) {
+            $deposits->where('month', (int) $request->month);
+        }
+
+        if ($request->filled('year') && is_numeric($request->year)) {
+            $deposits->where('year', (int) $request->year);
+        }
+
+        $deposits->orderBy('year', 'desc')->orderBy('month', 'desc')->orderBy('id', 'desc');
 
         return Datatables::eloquent($deposits)
             ->editColumn('member.first_name', function ($deposit) {
@@ -54,12 +76,12 @@ class MonthlyDepositController extends Controller {
                 $action = '<div class="d-flex justify-content-center flex-wrap">';
 
                 if ($deposit->status === 'pending') {
-                    $action .= '<button class="btn btn-warning btn-sm send-reminder mr-1 mb-1" data-id="' . $deposit->id . '"><i class="ti-bell"></i> ' . _lang('Send Reminder') . '</button>';
-                    $action .= '<button class="btn btn-success btn-sm mark-paid mr-1 mb-1" data-id="' . $deposit->id . '"><i class="ti-check"></i> ' . _lang('Mark Paid') . '</button>';
+                    $action .= '<button class="btn btn-warning btn-xs send-reminder mr-1 mb-1 px-2 py-1" data-id="' . $deposit->id . '"><i class="ti-bell"></i> ' . _lang('Send Reminder') . '</button>';
+                    $action .= '<button class="btn btn-success btn-xs mark-paid mr-1 mb-1 px-2 py-1" data-id="' . $deposit->id . '"><i class="ti-check"></i> ' . _lang('Mark Paid') . '</button>';
                 }
 
                 if ($deposit->transaction_id) {
-                    $action .= '<a class="btn btn-outline-primary btn-sm mb-1" href="' . route('transactions.show', $deposit->transaction_id) . '" target="_blank"><i class="ti-eye"></i> ' . _lang('Details') . '</a>';
+                    $action .= '<a class="btn btn-outline-primary btn-xs mb-1 px-2 py-1" href="' . route('transactions.show', $deposit->transaction_id) . '" target="_blank"><i class="ti-eye"></i> ' . _lang('Details') . '</a>';
                 }
 
                 return $action . '</div>';
@@ -125,7 +147,17 @@ class MonthlyDepositController extends Controller {
 
     public function history($account_id) {
         $account = SavingsAccount::with(['member', 'savings_type.currency'])->withoutGlobalScopes(['status'])->findOrFail($account_id);
-        return view('backend.monthly_deposits.history', compact('account'));
+        $availableYears = MonthlyDeposit::where('account_id', $account_id)
+            ->select('year')
+            ->distinct()
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+
+        if ($availableYears->isEmpty()) {
+            $availableYears = collect([now()->year]);
+        }
+
+        return view('backend.monthly_deposits.history', compact('account', 'availableYears'));
     }
 
     public function generate() {

@@ -16,6 +16,37 @@
                 @endif
             </div>
             <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-3">
+                        <select class="form-control auto-select filter-field" data-selected="" id="filter_status">
+                            <option value="">{{ _lang('All Status') }}</option>
+                            <option value="pending">{{ _lang('Pending') }}</option>
+                            <option value="paid">{{ _lang('Paid') }}</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control auto-select filter-field" data-selected="" id="filter_month">
+                            <option value="">{{ _lang('All Months') }}</option>
+                            @for($month = 1; $month <= 12; $month++)
+                            <option value="{{ $month }}">{{ date('F', mktime(0, 0, 0, $month, 1)) }}</option>
+                            @endfor
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control auto-select filter-field" data-selected="" id="filter_year">
+                            <option value="">{{ _lang('All Years') }}</option>
+                            @foreach($availableYears as $year)
+                            <option value="{{ $year }}">{{ $year }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="button" class="btn btn-outline-secondary btn-block" id="reset_filters">
+                            <i class="ti-close"></i>&nbsp;{{ _lang('Reset Filters') }}
+                        </button>
+                    </div>
+                </div>
+
                 <table id="monthly_deposits_table" class="table table-bordered">
                     <thead>
                         <tr>
@@ -46,7 +77,14 @@
     var monthly_deposits_table = $('#monthly_deposits_table').DataTable({
         processing: true,
         serverSide: true,
-        ajax: '{{ url('admin/monthly_deposits/get_table_data') }}',
+        ajax: {
+            url: '{{ url('admin/monthly_deposits/get_table_data') }}',
+            data: function (d) {
+                d.status = $('#filter_status').val();
+                d.month = $('#filter_month').val();
+                d.year = $('#filter_year').val();
+            }
+        },
         "columns" : [
             { data : 'account.account_number', name : 'account.account_number', 'defaultContent': '' },
             { data : 'member.first_name', name : 'member.first_name', 'defaultContent': '' },
@@ -180,6 +218,17 @@
     });
 
     $(document).on("ajax-submit", function () {
+        monthly_deposits_table.draw();
+    });
+
+    $(document).on('change', '.filter-field', function () {
+        monthly_deposits_table.draw();
+    });
+
+    $(document).on('click', '#reset_filters', function () {
+        $('#filter_status').val('').trigger('change');
+        $('#filter_month').val('').trigger('change');
+        $('#filter_year').val('').trigger('change');
         monthly_deposits_table.draw();
     });
 
