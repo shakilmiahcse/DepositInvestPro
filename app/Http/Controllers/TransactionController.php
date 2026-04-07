@@ -5,6 +5,7 @@ use App\Models\Loan;
 use App\Models\SavingsAccount;
 use App\Models\Transaction;
 use App\Notifications\DepositMoney;
+use App\Notifications\TransferMoney;
 use App\Notifications\WithdrawMoney;
 use DataTables;
 use Illuminate\Http\Request;
@@ -66,11 +67,14 @@ class TransactionController extends Controller
                 });
             }, true)
             ->addColumn('action', function ($transaction) {
-                return '<div class="dropdown text-center">'
-                . '<button class="btn btn-primary btn-xs dropdown-toggle" type="button" data-toggle="dropdown">' . _lang('Action')
-                . '&nbsp;</button>'
-                . '<div class="dropdown-menu">'
-                . '<a class="dropdown-item" href="' . route('transactions.edit', $transaction['id']) . '"><i class="ti-pencil-alt"></i> ' . _lang('Edit') . '</a>'
+                $actions = '';
+
+                if ($transaction->type == 'Transfer' && $transaction->dr_cr == 'dr' && $transaction->parent_id == null && $transaction->status == 0) {
+                    $actions .= '<a class="dropdown-item" href="' . route('transactions.approve_transfer', $transaction['id']) . '"><i class="ti-check-box"></i> ' . _lang('Approve') . '</a>';
+                    $actions .= '<a class="dropdown-item" href="' . route('transactions.reject_transfer', $transaction['id']) . '"><i class="ti-close"></i> ' . _lang('Reject') . '</a>';
+                }
+
+                $actions .= '<a class="dropdown-item" href="' . route('transactions.edit', $transaction['id']) . '"><i class="ti-pencil-alt"></i> ' . _lang('Edit') . '</a>'
                 . '<a class="dropdown-item" href="' . route('transactions.show', $transaction['id']) . '"><i class="ti-eye"></i>  ' . _lang('Details') . '</a>'
                 . '<a class="dropdown-item" href="' . route('transactions.show', $transaction['id']) . '?print=general" target="_blank"><i class="fas fa-print"></i>  ' . _lang('Regular Print') . '</a>'
                 . '<a class="dropdown-item" href="' . route('transactions.show', $transaction['id']) . '?print=pos" target="_blank"><i class="fas fa-print"></i>  ' . _lang('POS Receipt') . '</a>'
@@ -78,7 +82,13 @@ class TransactionController extends Controller
                 . csrf_field()
                 . '<input name="_method" type="hidden" value="DELETE">'
                 . '<button class="dropdown-item btn-remove" type="submit"><i class="ti-trash"></i> ' . _lang('Delete') . '</button>'
-                    . '</form>'
+                    . '</form>';
+
+                return '<div class="dropdown text-center">'
+                . '<button class="btn btn-primary btn-xs dropdown-toggle" type="button" data-toggle="dropdown">' . _lang('Action')
+                . '&nbsp;</button>'
+                . '<div class="dropdown-menu">'
+                . $actions
                     . '</div>'
                     . '</div>';
             })
@@ -266,6 +276,7 @@ class TransactionController extends Controller
         }
 
         $transaction = Transaction::find($id);
+        $oldStatus    = $transaction->status;
 
         $accountType = SavingsAccount::find($request->savings_account_id)->savings_type;
 
@@ -313,6 +324,26 @@ class TransactionController extends Controller
         $transaction->updated_user_id    = auth()->id();
         $transaction->save();
 
+        if ($transaction->type == 'Transfer' && $transaction->dr_cr == 'dr' && $transaction->parent_id == null && $oldStatus != $transaction->status) {
+            $childTransactions = Transaction::where('parent_id', $transaction->id)->get();
+
+            foreach ($childTransactions as $childTransaction) {
+                $childTransaction->status          = $transaction->status;
+                $childTransaction->updated_user_id = auth()->id();
+                $childTransaction->save();
+            }
+
+            if ($transaction->status == 2) {
+                $creditTransaction = $childTransactions->firstWhere('dr_cr', 'cr');
+
+                if ($creditTransaction) {
+                    try {
+                        $creditTransaction->member->notify(new TransferMoney($creditTransaction));
+                    } catch (\Exception $e) {}
+                }
+            }
+        }
+
         if (! $request->ajax()) {
             return redirect()->route('transactions.index')->with('success', _lang('Updated Successfully'));
         } else {
@@ -345,5 +376,65 @@ class TransactionController extends Controller
         DB::commit();
 
         return redirect()->route('transactions.index')->with('success', _lang('Deleted Successfully'));
+    }
+
+    public function approve_transfer($id)
+    {
+        DB::beginTransaction();
+
+        $transaction = Transaction::where('type', 'Transfer')
+            ->where('dr_cr', 'dr')
+            ->whereNull('parent_id')
+            ->findOrFail($id);
+
+        $transaction->status          = 2;
+        $transaction->updated_user_id = auth()->id();
+        $transaction->save();
+
+        $childTransactions = Transaction::where('parent_id', $transaction->id)->get();
+
+        foreach ($childTransactions as $childTransaction) {
+            $childTransaction->status          = 2;
+            $childTransaction->updated_user_id = auth()->id();
+            $childTransaction->save();
+        }
+
+        $creditTransaction = $childTransactions->firstWhere('dr_cr', 'cr');
+
+        if ($creditTransaction) {
+            try {
+                $creditTransaction->member->notify(new TransferMoney($creditTransaction));
+            } catch (\Exception $e) {}
+        }
+
+        DB::commit();
+
+        return redirect()->route('transactions.index')->with('success', _lang('Transfer Request Approved'));
+    }
+
+    public function reject_transfer($id)
+    {
+        DB::beginTransaction();
+
+        $transaction = Transaction::where('type', 'Transfer')
+            ->where('dr_cr', 'dr')
+            ->whereNull('parent_id')
+            ->findOrFail($id);
+
+        $transaction->status          = 1;
+        $transaction->updated_user_id = auth()->id();
+        $transaction->save();
+
+        $childTransactions = Transaction::where('parent_id', $transaction->id)->get();
+
+        foreach ($childTransactions as $childTransaction) {
+            $childTransaction->status          = 1;
+            $childTransaction->updated_user_id = auth()->id();
+            $childTransaction->save();
+        }
+
+        DB::commit();
+
+        return redirect()->route('transactions.index')->with('success', _lang('Transfer Request Rejected'));
     }
 }

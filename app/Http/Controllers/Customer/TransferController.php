@@ -90,7 +90,7 @@ class TransferController extends Controller {
 			$debit->dr_cr = 'dr';
 			$debit->type = 'Transfer';
 			$debit->method = 'Online';
-			$debit->status = 2;
+			$debit->status = 0;
 			$debit->note = $request->note;
 			$debit->description = _lang('Transfer Money from A/C') . ' ' . $debit->account->account_number . ' ' . _lang('to A/C') . ' ' . $receiverAccount->account_number;
 			$debit->created_user_id = auth()->id();
@@ -108,7 +108,7 @@ class TransferController extends Controller {
 				$fee->dr_cr = 'dr';
 				$fee->type = 'Fee';
 				$fee->method = 'Online';
-				$fee->status = 2;
+				$fee->status = 0;
 				$fee->created_user_id = auth()->id();
 				$fee->branch_id = auth()->user()->member->branch_id;
 				$fee->description = _lang('Own Account Transfer Fee');
@@ -125,7 +125,8 @@ class TransferController extends Controller {
 			$credit->dr_cr = 'cr';
 			$credit->type = 'Transfer';
 			$credit->method = 'Online';
-			$credit->status = 2;
+			$credit->status = 0;
+			$credit->parent_id = $debit->id;
 			$credit->note = $request->note;
 			$credit->description = _lang('Received Money from A/C') . ' ' . $debit->account->account_number . ' ' . _lang('to A/C') . ' ' . $receiverAccount->account_number;
 			$credit->created_user_id = auth()->id();
@@ -135,7 +136,7 @@ class TransferController extends Controller {
 			DB::commit();
 
 			if ($credit->id > 0) {
-				return redirect()->route('transfer.own_account_transfer')->with('success', _lang('Money transfered successfully'));
+				return redirect()->route('transfer.own_account_transfer')->with('success', _lang('Transfer request submitted successfully. Waiting for admin approval.'));
 			} else {
 				return redirect()->route('transfer.own_account_transfer')->with('error', _lang('Something went wrong, Please try again!'));
 			}
@@ -218,7 +219,7 @@ class TransferController extends Controller {
 			$debit->dr_cr = 'dr';
 			$debit->type = 'Transfer';
 			$debit->method = 'Online';
-			$debit->status = 2;
+			$debit->status = 0;
 			$debit->note = $request->note;
 			$debit->description = _lang('Transfer Money from A/C') . ' ' . $senderAccount->account_number . ' ' . _lang('to A/C') . ' ' . $receiverAccount->account_number;
 			$debit->created_user_id = auth()->id();
@@ -236,7 +237,7 @@ class TransferController extends Controller {
 				$fee->dr_cr = 'dr';
 				$fee->type = 'Fee';
 				$fee->method = 'Online';
-				$fee->status = 2;
+				$fee->status = 0;
 				$fee->created_user_id = auth()->id();
 				$fee->branch_id = auth()->user()->member->branch_id;
 				$fee->description = _lang('Other Account Transfer Fee');
@@ -253,7 +254,7 @@ class TransferController extends Controller {
 			$credit->dr_cr = 'cr';
 			$credit->type = 'Transfer';
 			$credit->method = 'Online';
-			$credit->status = 2;
+			$credit->status = 0;
 			$credit->parent_id = $debit->id;
 			$credit->note = $request->note;
 			$credit->description = _lang('Received Money from A/C') . ' ' . $senderAccount->account_number . ' ' . _lang('to A/C') . ' ' . $receiverAccount->account_number;
@@ -263,12 +264,8 @@ class TransferController extends Controller {
 
 			DB::commit();
 
-			try {
-				$credit->member->notify(new TransferMoney($credit));
-			} catch (\Exception $e) {}
-
 			if ($credit->id > 0) {
-				return redirect()->route('transfer.other_account_transfer')->with('success', _lang('Money transfered successfully'));
+				return redirect()->route('transfer.other_account_transfer')->with('success', _lang('Transfer request submitted successfully. Waiting for admin approval.'));
 			} else {
 				return redirect()->route('transfer.other_account_transfer')->with('error', _lang('Something went wrong, Please try again!'));
 			}
