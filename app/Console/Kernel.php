@@ -27,6 +27,15 @@ class Kernel extends ConsoleKernel {
         $schedule->command('monthly:generate')->monthlyOn(1, '00:00');
         $schedule->call(new \App\Cronjobs\OverdueLoanNotification)->everyThirtyMinutes();
         $schedule->call(new \App\Cronjobs\UpcommingLoanNotification)->everyTenMinutes();
+
+        $monthlyDepositReminderTime = get_option('monthly_deposit_reminder_time', '09:00') ?: '09:00';
+        if (! preg_match('/^\d{2}:\d{2}$/', $monthlyDepositReminderTime)) {
+            $monthlyDepositReminderTime = '09:00';
+        }
+
+        $schedule->call(new \App\Cronjobs\MonthlyDepositReminderNotification)
+            ->dailyAt($monthlyDepositReminderTime)
+            ->withoutOverlapping();
     }
 
     /**
