@@ -5,13 +5,13 @@
 	<div class="col-xl-3 col-md-6">
 		<div class="card mb-4 primary-card dashboard-card">
 			<div class="card-body">
-				<div class="d-flex">
+				<div class="d-flex justify-content-between align-items-start">
 					<div class="flex-grow-1">
 						<h5>{{ _lang('Total Members') }}</h5>
 						<h4 class="pt-1 mb-0"><b>{{ $total_customer }}</b></h4>
 					</div>
 					<div>
-						<a href="{{ route('members.index') }}"><i class="ti-arrow-right"></i>&nbsp;{{ _lang('View') }}</a>
+						<a href="{{ route('members.index') }}" class="btn-view">{{ _lang('View') }} <i class="ti-arrow-right"></i></a>
 					</div>
 				</div>
 			</div>
@@ -21,13 +21,13 @@
 	<div class="col-xl-3 col-md-6">
 		<div class="card mb-4 success-card dashboard-card">
 			<div class="card-body">
-				<div class="d-flex">
+				<div class="d-flex justify-content-between align-items-start">
 					<div class="flex-grow-1">
 						<h5>{{ _lang('Deposit Requests') }}</h5>
 						<h4 class="pt-1 mb-0"><b>{{ request_count('deposit_requests') }}</b></h4>
 					</div>
 					<div>
-						<a href="{{ route('deposit_requests.index') }}"><i class="ti-arrow-right"></i>&nbsp;{{ _lang('View') }}</a>
+						<a href="{{ route('deposit_requests.index') }}" class="btn-view">{{ _lang('View') }} <i class="ti-arrow-right"></i></a>
 					</div>
 				</div>
 			</div>
@@ -37,13 +37,13 @@
 	<div class="col-xl-3 col-md-6">
 		<div class="card mb-4 warning-card dashboard-card">
 			<div class="card-body">
-				<div class="d-flex">
+				<div class="d-flex justify-content-between align-items-start">
 					<div class="flex-grow-1">
 						<h5>{{ _lang('Withdraw Requests') }}</h5>
 						<h4 class="pt-1 mb-0"><b>{{ request_count('withdraw_requests') }}</b></h4>
 					</div>
 					<div>
-						<a href="{{ route('withdraw_requests.index') }}"><i class="ti-arrow-right"></i>&nbsp;{{ _lang('View') }}</a>
+						<a href="{{ route('withdraw_requests.index') }}" class="btn-view">{{ _lang('View') }} <i class="ti-arrow-right"></i></a>
 					</div>
 				</div>
 			</div>
@@ -53,13 +53,13 @@
 	<div class="col-xl-3 col-md-6">
 		<div class="card mb-4 info-card dashboard-card">
 			<div class="card-body">
-				<div class="d-flex">
+				<div class="d-flex justify-content-between align-items-start">
 					<div class="flex-grow-1">
 						<h5>{{ _lang('Total Investments') }}</h5>
 						<h4 class="pt-1 mb-0"><b>{{ $total_investments }}</b></h4>
 					</div>
 					<div>
-						<a href="{{ route('investments.index') }}"><i class="ti-arrow-right"></i>&nbsp;{{ _lang('View') }}</a>
+						<a href="{{ route('investments.index') }}" class="btn-view">{{ _lang('View') }} <i class="ti-arrow-right"></i></a>
 					</div>
 				</div>
 			</div>
@@ -71,7 +71,7 @@
 	<div class="col-xl-3 col-md-6 mb-4">
 		<div class="card h-100 border-left-primary">
 			<div class="card-body">
-				<h6 class="text-muted mb-2">{{ _lang('Total Invested Amount') }}</h6>
+				<h6 class="text-muted mb-2"><i class="ti-bar-chart"></i> {{ _lang('Total Invested Amount') }}</h6>
 				<h4 class="mb-0">{{ decimalPlace($investment_total_invested, currency()) }}</h4>
 			</div>
 		</div>
@@ -80,7 +80,7 @@
 	<div class="col-xl-3 col-md-6 mb-4">
 		<div class="card h-100 border-left-success">
 			<div class="card-body">
-				<h6 class="text-muted mb-2">{{ _lang('Total Returns') }}</h6>
+				<h6 class="text-muted mb-2"><i class="ti-wallet"></i> {{ _lang('Total Returns') }}</h6>
 				<h4 class="mb-0">{{ decimalPlace($investment_total_returns, currency()) }}</h4>
 			</div>
 		</div>
@@ -89,7 +89,7 @@
 	<div class="col-xl-3 col-md-6 mb-4">
 		<div class="card h-100 border-left-danger">
 			<div class="card-body">
-				<h6 class="text-muted mb-2">{{ _lang('Total Investment Expenses') }}</h6>
+				<h6 class="text-muted mb-2"><i class="ti-close"></i> {{ _lang('Total Investment Expenses') }}</h6>
 				<h4 class="mb-0">{{ decimalPlace($investment_total_expenses, currency()) }}</h4>
 			</div>
 		</div>
@@ -98,8 +98,8 @@
 	<div class="col-xl-3 col-md-6 mb-4">
 		<div class="card h-100 border-left-warning">
 			<div class="card-body">
-				<h6 class="text-muted mb-2">{{ _lang('Total Profit') }}</h6>
-				<h4 class="mb-0">{{ decimalPlace($investment_total_profit, currency()) }}</h4>
+				<h6 class="text-muted mb-2"><i class="ti-stats-up"></i> {{ _lang('Total Profit') }}</h6>
+				<h4 class="mb-0 @if($investment_total_profit < 0) text-danger @else text-success @endif">{{ decimalPlace($investment_total_profit, currency()) }}</h4>
 			</div>
 		</div>
 	</div>
@@ -108,7 +108,7 @@
 <div class="row">
 	<div class="col-12 mb-4">
 		<div class="alert {{ $investment_available_balance < 0 ? 'alert-danger' : 'alert-info' }} mb-0">
-			<strong>{{ _lang('Available Investment Balance') }}:</strong> {{ decimalPlace($investment_available_balance, currency()) }}
+			<i class="ti-info-alt"></i> <strong>{{ _lang('Available Investment Balance') }}:</strong> {{ decimalPlace($investment_available_balance, currency()) }}
 		</div>
 	</div>
 </div>
@@ -117,7 +117,7 @@
 	<div class="col-md-4 col-sm-5 mb-4">
 		<div class="card h-100">
 			<div class="card-header d-flex align-items-center">
-				<span>{{ _lang('Expense Overview').' - '.date('M Y') }}</span>
+				<i class="ti-pie-chart"></i> <span>{{ _lang('Expense Overview').' - '.date('M Y') }}</span>
 			</div>
 			<div class="card-body">
 				<canvas id="expenseOverview"></canvas>
@@ -127,8 +127,8 @@
 
 	<div class="col-md-8 col-sm-7 mb-4">
 		<div class="card h-100">
-			<div class="card-header d-flex align-items-center">
-				<span>{{ _lang('Deposit & Withdraw Analytics').' - '.date('Y')  }}</span>
+			<div class="card-header d-flex align-items-center justify-content-between flex-wrap">
+				<span><i class="ti-stats-up"></i> {{ _lang('Deposit & Withdraw Analytics').' - '.date('Y')  }}</span>
 				<select class="filter-select ml-auto py-0 auto-select" data-selected="{{ base_currency_id() }}">
 					@foreach(\App\Models\Currency::where('status',1)->get() as $currency)
 					<option value="{{ $currency->id }}" data-symbol="{{ currency($currency->name) }}">{{ $currency->name }}</option>
@@ -146,7 +146,7 @@
 	<div class="col-md-4 mb-4">
 		<div class="card h-100">
 			<div class="card-header d-flex align-items-center">
-				<span>{{ _lang('Investment Summary') }}</span>
+				<i class="ti-pie-chart"></i> <span>{{ _lang('Investment Summary') }}</span>
 			</div>
 			<div class="card-body">
 				<canvas id="investmentSummaryChart"></canvas>
@@ -156,9 +156,9 @@
 
 	<div class="col-md-8 mb-4">
 		<div class="card h-100">
-			<div class="card-header d-flex align-items-center">
-				<span>{{ _lang('Investment List') }}</span>
-				<a href="{{ route('investments.index') }}" class="btn btn-outline-primary btn-xs ml-auto">{{ _lang('View All') }}</a>
+			<div class="card-header d-flex align-items-center justify-content-between flex-wrap">
+				<span><i class="ti-briefcase"></i> {{ _lang('Investment List') }}</span>
+				<a href="{{ route('investments.index') }}" class="btn btn-outline-primary btn-xs">{{ _lang('View All') }} <i class="ti-arrow-right"></i></a>
 			</div>
 			<div class="card-body px-0 pt-0">
 				<div class="table-responsive">
@@ -186,7 +186,7 @@
 									$profit = $totalReturn - $totalInvested - $totalExpense;
 								@endphp
 								<tr>
-									<td class="pl-4">{{ $investment->name }}</td>
+									<td class="pl-4"><strong>{{ $investment->name }}</strong></td>
 									<td>{{ decimalPlace($totalInvested, currency()) }}</td>
 									<td>{{ decimalPlace($totalReturn, currency()) }}</td>
 									<td class="{{ $profit >= 0 ? 'text-success' : 'text-danger' }}">{{ decimalPlace($profit, currency()) }}</td>
@@ -205,13 +205,13 @@
 	<div class="col-lg-12">
 		<div class="card mb-4">
 			<div class="card-header">
-				{{ _lang('Recent Transactions') }}
+				<i class="ti-receipt"></i> {{ _lang('Recent Transactions') }}
 			</div>
 			<div class="card-body px-0 pt-0">
 				<div class="table-responsive">
 					<table class="table table-bordered">
 					<thead>
-					    <tr>
+					     <tr>
 						    <th class="pl-4">{{ _lang('Date') }}</th>
 							<th>{{ _lang('Member') }}</th>
 							<th class="text-nowrap">{{ _lang('Account Number') }}</th>
@@ -220,7 +220,7 @@
 							<th>{{ _lang('Type') }}</th>
 							<th>{{ _lang('Status') }}</th>
 							<th class="text-center">{{ _lang('Action') }}</th>
-					    </tr>
+					     </tr>
 					</thead>
 					<tbody>
 					@if(count($recent_transactions) == 0)
@@ -235,9 +235,9 @@
 						@endphp
 						<tr>
 							<td class="text-nowrap pl-4">{{ $transaction->trans_date }}</td>
-							<td>{{ $transaction->member->name }}</td>
-							<td>{{ $transaction->account->account_number }}</td>
-							<td><span class="text-nowrap {{ $class }}">{{ $symbol.' '.decimalPlace($transaction->amount, currency($transaction->account->savings_type->currency->name)) }}</span></td>
+							<td>{{ $transaction->member->name ?? '-' }}</td>
+							<td>{{ $transaction->account->account_number ?? '-' }}</td>
+							<td><span class="text-nowrap {{ $class }}">{{ $symbol.' '.decimalPlace($transaction->amount, currency($transaction->account->savings_type->currency->name ?? '')) }}</span></td>
 							<td>{{ strtoupper($transaction->dr_cr) }}</td>
 							<td>{{ ucwords(str_replace('_',' ',$transaction->type)) }}</td>
 							<td>{!! xss_clean(transaction_status($transaction->status)) !!}</td>
