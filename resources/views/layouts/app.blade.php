@@ -10,6 +10,15 @@
 		<!-- App favicon -->
         <link rel="shortcut icon" href="{{ get_favicon() }}">
 
+		<!-- PWA Meta Tags -->
+		<link rel="manifest" href="{{ route('pwa.manifest') }}">
+		<meta name="theme-color" content="#1e3a8a">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+		<meta name="apple-mobile-web-app-title" content="{{ get_option('site_title', config('app.name')) }}">
+		<link rel="apple-touch-icon" href="{{ asset('public/images/icons/apple-touch-icon.png') }}">
+		<meta name="pwa-sw" content="{{ route('pwa.sw') }}">
+
 		<!-- DataTables -->
         <link href="{{ asset('public/backend/plugins/datatable/datatables.min.css') }}" rel="stylesheet" type="text/css" />
 
@@ -31,6 +40,7 @@
 		<link rel="stylesheet" href="{{ asset('public/backend/assets/css/default-css.css') }}">
 		<link rel="stylesheet" href="{{ asset('public/backend/assets/css/styles.css') . '?v=' . filemtime(public_path('backend/assets/css/styles.css')) }}">
 		<link rel="stylesheet" href="{{ asset('public/backend/assets/css/responsive.css?v=1.1') }}">
+		<link rel="stylesheet" href="{{ asset('public/backend/assets/css/mobile-pwa.css') . '?v=' . filemtime(public_path('backend/assets/css/mobile-pwa.css')) }}">
 
 		<!-- Modernizr -->
 		<script src="{{ asset('public/backend/assets/js/vendor/modernizr-3.6.0.min.js') }}"></script>
@@ -43,7 +53,7 @@
 		@include('layouts.others.languages')
     </head>
 
-    <body>
+    <body class="has-mobile-nav">
 		<!-- Main Modal -->
 		<div id="main_modal" class="modal" tabindex="-1" role="dialog">
 		    <div class="modal-dialog modal-lg" role="document">
@@ -238,6 +248,10 @@
 
 		</div><!--End Page Container-->
 
+		<!-- Mobile Bottom Navigation & PWA Install Banner -->
+		@include('layouts.others.pwa-banner')
+		@include('layouts.others.mobile-nav')
+
         <!-- jQuery  -->
 		<script src="{{ asset('public/backend/assets/js/vendor/jquery-3.6.1.min.js') }}"></script>
 		<script src="{{ asset('public/backend/assets/js/popper.min.js') }}"></script>
@@ -262,6 +276,7 @@
 
         <!-- App js -->
         <script src="{{ asset('public/backend/assets/js/scripts.js') . '?v=' . filemtime(public_path('backend/assets/js/scripts.js')) }}"></script>
+        <script src="{{ asset('public/backend/assets/js/pwa-init.js') . '?v=' . filemtime(public_path('backend/assets/js/pwa-init.js')) }}"></script>
 
 		<script type="text/javascript">
 		(function($) {

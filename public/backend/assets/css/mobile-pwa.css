@@ -1,0 +1,451 @@
+/**
+ * Mobile-First & PWA Enhancement Styles
+ * DepositInvestPro / Credit Lite
+ */
+
+/* =======================================================
+   1. PWA Install Banner (Floating Bottom Sheet / Banner)
+   ======================================================= */
+.pwa-install-banner {
+    position: fixed;
+    bottom: 75px;
+    left: 15px;
+    right: 15px;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15), 0 2px 8px rgba(0, 0, 0, 0.08);
+    padding: 14px 16px;
+    z-index: 1050;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    border: 1px solid #e2e8f0;
+    animation: pwaSlideUp 0.35s ease-out;
+}
+
+@keyframes pwaSlideUp {
+    from {
+        transform: translateY(100px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.pwa-install-banner .pwa-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pwa-install-banner .pwa-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: #f1f5f9;
+    object-fit: cover;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.pwa-install-banner .pwa-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+    line-height: 1.2;
+}
+
+.pwa-install-banner .pwa-subtitle {
+    font-size: 12px;
+    color: #64748b;
+    margin: 2px 0 0 0;
+}
+
+.pwa-install-banner .pwa-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.pwa-btn-install {
+    background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+    color: #ffffff !important;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+    transition: transform 0.15s;
+    white-space: nowrap;
+}
+
+.pwa-btn-install:active {
+    transform: scale(0.96);
+}
+
+.pwa-btn-close {
+    background: #f1f5f9;
+    border: none;
+    color: #94a3b8;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* =======================================================
+   2. Mobile Bottom Navigation Bar
+   ======================================================= */
+.mobile-bottom-nav {
+    display: none;
+}
+
+@media (max-width: 991.98px) {
+    body.has-mobile-nav {
+        padding-bottom: 74px !important;
+    }
+
+    .mobile-bottom-nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 64px;
+        background: #ffffff;
+        border-top: 1px solid #e2e8f0;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.06);
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        z-index: 1040;
+        padding: 0 4px;
+    }
+
+    .mobile-bottom-nav .nav-item {
+        flex: 1;
+        text-align: center;
+        text-decoration: none;
+        color: #64748b;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        padding: 6px 0;
+        transition: all 0.2s ease;
+        position: relative;
+    }
+
+    .mobile-bottom-nav .nav-item i {
+        font-size: 18px;
+        margin-bottom: 3px;
+        transition: transform 0.2s ease;
+    }
+
+    .mobile-bottom-nav .nav-item span {
+        font-size: 11px;
+        font-weight: 500;
+        letter-spacing: -0.2px;
+        line-height: 1;
+    }
+
+    .mobile-bottom-nav .nav-item.active {
+        color: #2563eb;
+    }
+
+    .mobile-bottom-nav .nav-item.active i {
+        transform: translateY(-2px);
+        color: #2563eb;
+    }
+
+    .mobile-bottom-nav .nav-item.active span {
+        font-weight: 700;
+    }
+
+    /* Highlight Center Action Button (e.g. Deposit/Pay) */
+    .mobile-bottom-nav .nav-item-center {
+        margin-top: -18px;
+    }
+
+    .mobile-bottom-nav .nav-item-center .center-btn {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 6px 16px rgba(37, 99, 235, 0.4);
+        margin-bottom: 2px;
+        transition: transform 0.2s ease;
+    }
+
+    .mobile-bottom-nav .nav-item-center .center-btn i {
+        font-size: 20px;
+        margin-bottom: 0;
+        color: #ffffff !important;
+    }
+
+    .mobile-bottom-nav .nav-item-center:active .center-btn {
+        transform: scale(0.92);
+    }
+}
+
+/* =======================================================
+   3. Modern Fintech Wallet Card (Customer Portal)
+   ======================================================= */
+.fintech-wallet-card {
+    background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+    border-radius: 20px;
+    color: #ffffff;
+    padding: 22px 20px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 25px rgba(37, 99, 235, 0.25);
+    margin-bottom: 20px;
+}
+
+.fintech-wallet-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -20%;
+    width: 220px;
+    height: 220px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.fintech-wallet-card::after {
+    content: '';
+    position: absolute;
+    bottom: -40%;
+    left: -10%;
+    width: 180px;
+    height: 180px;
+    background: rgba(255, 255, 255, 0.06);
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.fintech-wallet-card .wallet-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    position: relative;
+    z-index: 2;
+}
+
+.fintech-wallet-card .wallet-type-badge {
+    background: rgba(255, 255, 255, 0.22);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.fintech-wallet-card .wallet-acc-no {
+    font-size: 13px;
+    opacity: 0.9;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.fintech-wallet-card .wallet-balance-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    opacity: 0.85;
+    margin-bottom: 4px;
+}
+
+.fintech-wallet-card .wallet-balance-amount {
+    font-size: 28px;
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 16px;
+}
+
+.fintech-wallet-card .wallet-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-top: 1px solid rgba(255, 255, 255, 0.18);
+    padding-top: 12px;
+    font-size: 12px;
+    position: relative;
+    z-index: 2;
+}
+
+/* =======================================================
+   4. Mobile Quick Action Buttons Grid
+   ======================================================= */
+.quick-actions-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+@media (max-width: 575.98px) {
+    .quick-actions-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+    }
+}
+
+.quick-action-item {
+    background: #ffffff;
+    border: 1px solid #edf2f7;
+    border-radius: 16px;
+    padding: 14px 8px;
+    text-align: center;
+    text-decoration: none;
+    color: #1e293b;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    transition: all 0.2s ease;
+}
+
+.quick-action-item:hover, .quick-action-item:active {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.quick-action-item .action-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    margin-bottom: 8px;
+    transition: transform 0.2s;
+}
+
+.quick-action-item:active .action-icon {
+    transform: scale(0.92);
+}
+
+.quick-action-item .action-label {
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 1.2;
+    color: #334155;
+}
+
+/* Icon Palette styles */
+.action-icon.bg-deposit { background: #eff6ff; color: #2563eb; }
+.action-icon.bg-transfer { background: #f0fdf4; color: #16a34a; }
+.action-icon.bg-withdraw { background: #fef2f2; color: #dc2626; }
+.action-icon.bg-passbook { background: #faf5ff; color: #9333ea; }
+.action-icon.bg-invest   { background: #fff7ed; color: #ea580c; }
+.action-icon.bg-loan     { background: #fdf4ff; color: #c026d3; }
+
+/* =======================================================
+   5. Mobile Responsive Transaction Feed
+   ======================================================= */
+.mobile-tx-list {
+    display: none;
+}
+
+@media (max-width: 767.98px) {
+    .mobile-tx-list {
+        display: block;
+    }
+    .desktop-tx-table {
+        display: none !important;
+    }
+}
+
+.mobile-tx-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background 0.15s;
+}
+
+.mobile-tx-item:last-child {
+    border-bottom: none;
+}
+
+.mobile-tx-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.mobile-tx-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+}
+
+.mobile-tx-icon.cr {
+    background: #ecfdf5;
+    color: #059669;
+}
+
+.mobile-tx-icon.dr {
+    background: #fef2f2;
+    color: #e11d48;
+}
+
+.mobile-tx-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 2px;
+}
+
+.mobile-tx-date {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.mobile-tx-right {
+    text-align: right;
+}
+
+.mobile-tx-amount {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 2px;
+}
+
+.mobile-tx-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-weight: 600;
+    text-transform: capitalize;
+}

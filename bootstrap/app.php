@@ -11,6 +11,14 @@
 |
 */
 
+if (file_exists(dirname(__DIR__) . '/.env')) {
+    try {
+        \Dotenv\Dotenv::createMutable(dirname(__DIR__))->load();
+    } catch (\Throwable $e) {
+        // Fallback
+    }
+}
+
 $app = new Illuminate\Foundation\Application(
     $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
 );

@@ -10,6 +10,15 @@
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ get_favicon() }}">
 
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="{{ route('pwa.manifest') }}">
+    <meta name="theme-color" content="#1e3a8a">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="{{ get_option('site_title', config('app.name')) }}">
+    <link rel="apple-touch-icon" href="{{ asset('public/images/icons/apple-touch-icon.png') }}">
+    <meta name="pwa-sw" content="{{ route('pwa.sw') }}">
+
     <title>{{ get_option('site_title', config('app.name')) }}</title>
 
     <!-- Google font -->
@@ -20,6 +29,7 @@
     <!-- Styles -->
     <link rel="stylesheet" href="{{ asset('public/backend/plugins/bootstrap/css/bootstrap.min.css') }}">
     <link href="{{ asset('public/auth/css/app.css') . '?v=' . filemtime(public_path('auth/css/app.css')) }}" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('public/backend/assets/css/mobile-pwa.css') . '?v=' . filemtime(public_path('backend/assets/css/mobile-pwa.css')) }}">
     <script>
         (function () {
             var allowedOrigins = [window.location.origin];
@@ -123,6 +133,11 @@
             @yield('content')
         </main>
     </div>
+
+    @include('layouts.others.pwa-banner')
+
+    <script src="{{ asset('public/backend/assets/js/vendor/jquery-3.6.1.min.js') }}"></script>
+    <script src="{{ asset('public/backend/assets/js/pwa-init.js') . '?v=' . filemtime(public_path('backend/assets/js/pwa-init.js')) }}"></script>
 	
 	@yield('js-script')
 </body>

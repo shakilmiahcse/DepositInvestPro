@@ -42,6 +42,7 @@ use App\Http\Controllers\TransactionCategoryController;
 use App\Http\Controllers\NotificationTemplateController;
 use App\Http\Controllers\MonthlyDepositController;
 use App\Http\Controllers\ProfitDistributionController;
+use App\Http\Controllers\PwaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,6 +54,10 @@ use App\Http\Controllers\ProfitDistributionController;
 | contains the "web" middleware group. Now create something great!
 |
  */
+
+// PWA Dynamic Routes
+Route::get('manifest.json', [PwaController::class, 'manifest'])->name('pwa.manifest');
+Route::get('sw.js', [PwaController::class, 'serviceWorker'])->name('pwa.sw');
 
 Route::group(['middleware' => ['install']], function () {
 
