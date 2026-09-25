@@ -16,22 +16,25 @@ class MonthlyDepositReminder extends Notification {
     private $template;
     private $replace = [];
 
-    public function __construct($monthlyDeposit) {
+    public function __construct($monthlyDeposit, string $templateSlug = 'MONTHLY_DEPOSIT_REMINDER') {
         Overrider::load("Settings");
 
         $this->monthlyDeposit = $monthlyDeposit;
-        $this->template       = EmailSMSTemplate::where('slug', 'MONTHLY_DEPOSIT_REMINDER')->first();
+        $this->template       = EmailSMSTemplate::where('slug', $templateSlug)->first()
+            ?: EmailSMSTemplate::where('slug', 'MONTHLY_DEPOSIT_REMINDER')->first();
 
-        $currency  = $this->monthlyDeposit->account->savings_type->currency->name;
-        $balance   = get_account_balance($this->monthlyDeposit->account_id, $this->monthlyDeposit->member_id);
-        $dueMonth  = date('F Y', mktime(0, 0, 0, $this->monthlyDeposit->month, 1, $this->monthlyDeposit->year));
+        $currency = ($this->monthlyDeposit->account && $this->monthlyDeposit->account->savings_type && $this->monthlyDeposit->account->savings_type->currency) 
+            ? $this->monthlyDeposit->account->savings_type->currency->name 
+            : '';
+        $balance  = get_account_balance($this->monthlyDeposit->account_id, $this->monthlyDeposit->member_id);
+        $dueMonth = date('F Y', mktime(0, 0, 0, $this->monthlyDeposit->month, 1, $this->monthlyDeposit->year));
 
-        $this->replace['name']           = $this->monthlyDeposit->member->name;
-        $this->replace['account_number'] = $this->monthlyDeposit->account->account_number;
+        $this->replace['name']           = $this->monthlyDeposit->member ? $this->monthlyDeposit->member->name : '';
+        $this->replace['account_number'] = $this->monthlyDeposit->account ? $this->monthlyDeposit->account->account_number : '';
         $this->replace['amount']         = decimalPlace($this->monthlyDeposit->amount, currency($currency));
         $this->replace['balance']        = decimalPlace($balance, currency($currency));
         $this->replace['dueMonth']       = $dueMonth;
-        $this->replace['dateTime']       = now();
+        $this->replace['dateTime']       = now()->format(get_date_format() . ' ' . get_time_format());
     }
 
     public function via($notifiable) {
@@ -51,14 +54,20 @@ class MonthlyDepositReminder extends Notification {
     }
 
     public function toMail($notifiable) {
-        $message = processShortCode($this->template->email_body, $this->replace);
+        $subject = ($this->template && $this->template->subject) ? $this->template->subject : _lang('Monthly Deposit Reminder');
+        $body    = ($this->template && $this->template->email_body) ? $this->template->email_body : '<p>Dear <strong>{{name}}</strong>,</p><p>This is a friendly reminder that your monthly deposit of <strong>{{amount}}</strong> for account <strong>{{account_number}}</strong> is due for <strong>{{dueMonth}}</strong>.</p>';
+        $message = processShortCode($body, $this->replace);
 
         return (new MailMessage)
-            ->subject($this->template->subject)
+            ->subject($subject)
             ->markdown('email.notification', ['message' => $message]);
     }
 
     public function toSMS($notifiable) {
+        if (! $this->template || ! $this->template->sms_body) {
+            return null;
+        }
+
         $message = processShortCode($this->template->sms_body, $this->replace);
 
         return (new SmsMessage())
@@ -67,6 +76,10 @@ class MonthlyDepositReminder extends Notification {
     }
 
     public function toArray($notifiable) {
+        if (! $this->template || ! $this->template->notification_body) {
+            return ['message' => ''];
+        }
+
         $message = processShortCode($this->template->notification_body, $this->replace);
 
         return ['message' => $message];

@@ -132,6 +132,7 @@ Route::group(['middleware' => ['install']], function () {
                 Route::post('permission/store', [PermissionController::class, 'store'])->name('permission.store');
 
                 //Language Controller
+                Route::post('languages/auto_translate', [LanguageController::class, 'auto_translate'])->name('languages.auto_translate');
                 Route::resource('languages', LanguageController::class);
 
                 //Utility Controller

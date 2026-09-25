@@ -2,17 +2,14 @@
 
 namespace App\Services;
 
-use App\Mail\GeneralMail;
 use App\Models\EmailSMSTemplate;
 use App\Models\MonthlyDeposit;
+use App\Notifications\MonthlyDepositReminder;
 use App\Utilities\Overrider;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Mail;
 use Throwable;
 
 class MonthlyDepositReminderService {
-    private const BULK_TEMPLATE_SLUG = 'MONTHLY_DEPOSIT_BULK_REMINDER';
-
     public function getSettings(): array {
         return [
             'auto_enabled'        => get_option('monthly_deposit_auto_reminder_enabled', '0'),
@@ -32,20 +29,21 @@ class MonthlyDepositReminderService {
     }
 
     public function sendBulkReminder(array $filters = []): array {
+        @ini_set('max_execution_time', 0);
+        @set_time_limit(0);
+
         Overrider::load('Settings');
 
-        $template = EmailSMSTemplate::where('slug', self::BULK_TEMPLATE_SLUG)->first();
+        $template = EmailSMSTemplate::where('slug', 'MONTHLY_DEPOSIT_BULK_REMINDER')->first()
+            ?: EmailSMSTemplate::where('slug', 'MONTHLY_DEPOSIT_REMINDER')->first();
 
-        if ($template != null && (int) $template->email_status !== 1) {
-            return $this->error(_lang('Bulk reminder email template is disabled'));
+        if ($template != null && (int) $template->email_status !== 1 && (int) $template->sms_status !== 1 && (int) $template->notification_status !== 1) {
+            return $this->error(_lang('Monthly deposit bulk reminder is disabled. Please enable Email, SMS or Local Notification in Notification Templates.'));
         }
 
         $query = MonthlyDeposit::pending()
-            ->with('member')
-            ->whereHas('member', function (Builder $query) {
-                $query->whereNotNull('email')
-                    ->where('email', '!=', '');
-            });
+            ->with(['member', 'account.savings_type.currency'])
+            ->whereHas('member');
 
         if (! empty($filters['month']) && is_numeric($filters['month'])) {
             $query->where('month', (int) $filters['month']);
@@ -63,51 +61,36 @@ class MonthlyDepositReminderService {
             return $this->error(_lang('No pending monthly deposits found for reminder'));
         }
 
-        $members = $deposits->pluck('member')
-            ->filter(fn ($member) => $member != null && $member->id != null)
-            ->unique('id')
-            ->values();
+        $sentCount       = 0;
+        $failedCount     = 0;
+        $notifiedMembers = [];
 
-        $emails = $members->pluck('email')
-            ->map(fn ($email) => trim(strtolower((string) $email)))
-            ->filter(fn ($email) => filter_var($email, FILTER_VALIDATE_EMAIL))
-            ->unique()
-            ->values()
-            ->all();
-
-        if (empty($emails)) {
-            return $this->error(_lang('No valid email recipients found for reminder'));
-        }
-
-        $toAddress = $this->getToAddress();
-
-        if (! filter_var($toAddress, FILTER_VALIDATE_EMAIL)) {
-            return $this->error(_lang('Please configure a valid From Email before sending reminders'));
-        }
-
-        $mail          = new \stdClass();
-        $mail->subject = $template != null ? $template->subject : _lang('Monthly Deposit Reminder');
-        $mail->body    = processShortCode($template != null ? $template->email_body : $this->defaultBulkEmailBody(), [
-            'member_count'  => (string) $members->count(),
-            'deposit_count' => (string) $deposits->count(),
-            'dateTime'      => now()->format(get_date_format() . ' ' . get_time_format()),
-            'company_name'  => get_option('company_name', get_option('site_title', config('app.name'))),
-        ]);
-
-        try {
-            foreach (array_chunk($emails, 50) as $emailChunk) {
-                Mail::to($toAddress)->bcc($emailChunk)->send(new GeneralMail($mail));
+        foreach ($deposits as $deposit) {
+            if (! $deposit->member || ! $deposit->member->id || ! $deposit->account) {
+                continue;
             }
-        } catch (Throwable $e) {
-            return $this->error(_lang('Failed to send reminder') . ': ' . $e->getMessage());
+
+            try {
+                $deposit->member->notify(new MonthlyDepositReminder($deposit, 'MONTHLY_DEPOSIT_BULK_REMINDER'));
+                $sentCount++;
+                $notifiedMembers[$deposit->member_id] = true;
+            } catch (Throwable $e) {
+                $failedCount++;
+            }
+        }
+
+        $memberCount = count($notifiedMembers);
+
+        if ($sentCount === 0 && $failedCount > 0) {
+            return $this->error(_lang('Failed to send reminders. Please check your mail/SMS settings.'));
         }
 
         return [
             'success'       => true,
-            'message'       => _lang('Bulk reminder sent successfully') . ': ' . count($emails),
-            'member_count'  => $members->count(),
-            'deposit_count' => $deposits->count(),
-            'email_count'   => count($emails),
+            'message'       => _lang('Bulk reminder sent successfully') . ': ' . $sentCount . ' ' . _lang('reminder(s) sent to') . ' ' . $memberCount . ' ' . _lang('member(s)'),
+            'member_count'  => $memberCount,
+            'deposit_count' => $sentCount,
+            'email_count'   => $sentCount,
         ];
     }
 
@@ -182,16 +165,6 @@ class MonthlyDepositReminderService {
             ->unique()
             ->values()
             ->all();
-    }
-
-    private function getToAddress(): string {
-        return get_option('from_email')
-            ?: get_option('email')
-            ?: config('mail.from.address', '');
-    }
-
-    private function defaultBulkEmailBody(): string {
-        return '<p>Dear Member,</p><p>This is a friendly reminder that your monthly deposit is still pending. Please complete the deposit on time.</p><p>Regards,<br>{{company_name}}</p>';
     }
 
     private function error(string $message): array {
