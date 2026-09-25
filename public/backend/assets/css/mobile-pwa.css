@@ -449,3 +449,72 @@
     font-weight: 600;
     text-transform: capitalize;
 }
+
+/* =======================================================
+   6. Mobile Top Header Bar Optimization
+   ======================================================= */
+@media (max-width: 767.98px) {
+    .header-area {
+        padding: 8px 12px !important;
+    }
+    .header-area .nav-btn {
+        margin-top: 4px;
+    }
+    .notification-area {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        margin: 0 !important;
+        float: right !important;
+    }
+    .notification-area > li {
+        margin: 0 4px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+    }
+    .notification-area #selectLanguage {
+        font-size: 12px !important;
+        padding: 4px 8px !important;
+        background: #f1f5f9 !important;
+        border-radius: 20px !important;
+        color: #334155 !important;
+        border: 1px solid #e2e8f0;
+        display: inline-flex;
+        align-items: center;
+        text-decoration: none;
+    }
+    .notification-area li > i.ti-bell {
+        font-size: 18px;
+        padding: 6px 8px;
+        color: #475569;
+        cursor: pointer;
+    }
+    .user-profile {
+        padding: 2px !important;
+        background: transparent !important;
+    }
+    .user-profile .user-name {
+        margin: 0 !important;
+        font-size: 13px !important;
+        display: flex !important;
+        align-items: center !important;
+        cursor: pointer;
+    }
+    .user-profile .avatar {
+        width: 34px !important;
+        height: 34px !important;
+        border-radius: 50% !important;
+        margin-right: 2px !important;
+        border: 1px solid #cbd5e1;
+    }
+    .user-profile .dropdown-menu {
+        right: 0 !important;
+        left: auto !important;
+        min-width: 200px;
+    }
+    .bell-notify-box.notify-box {
+        width: 280px !important;
+        right: -50px !important;
+        left: auto !important;
+    }
+}

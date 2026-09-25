@@ -36,23 +36,23 @@
 				</span>
 			</div>
 			
-			<div class="wallet-balance-label">{{ _lang('Available Balance') }}</div>
+			<div class="wallet-balance-label">{{ _lang('Balance') }}</div>
 			<div class="wallet-balance-amount">
-				{{ decimalPlace($account->balance - $account->blocked_amount, currency($account->savings_type->currency->name)) }}
+				{{ decimalPlace($account->balance, currency($account->savings_type->currency->name)) }}
 			</div>
 
+			@if($account->blocked_amount > 0)
 			<div class="wallet-footer">
 				<div>
-					<span class="opacity-75">{{ _lang('Total Balance') }}:</span>
-					<strong>{{ decimalPlace($account->balance, currency($account->savings_type->currency->name)) }}</strong>
+					<span class="opacity-75">{{ _lang('Available') }}:</span>
+					<strong>{{ decimalPlace($account->balance - $account->blocked_amount, currency($account->savings_type->currency->name)) }}</strong>
 				</div>
-				@if($account->blocked_amount > 0)
 				<div>
 					<span class="opacity-75">{{ _lang('Blocked') }}:</span>
 					<strong>{{ decimalPlace($account->blocked_amount, currency($account->savings_type->currency->name)) }}</strong>
 				</div>
-				@endif
 			</div>
+			@endif
 		</div>
 	</div>
 	@endforeach

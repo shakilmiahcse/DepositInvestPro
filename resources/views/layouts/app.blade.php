@@ -134,13 +134,13 @@
 						<div class="col-lg-6 col-8 clearfix rtl-1">
 
 							<ul class="notification-area float-right">
-	                            <li class="d-none d-md-inline-block">
+	                            <li class="d-inline-block">
 									<div class="dropdown">
 									  <a class="dropdown-toggle" type="button" id="selectLanguage" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-									  	{{ session('language') =='' ? get_option('language') : session('language') }}
+									  	<i class="ti-world mr-1"></i><span class="d-none d-sm-inline-block">{{ session('language') =='' ? get_option('language') : session('language') }}</span>
 										<i class="fa fa-angle-down"></i>
 									  </a>
-									  <div class="dropdown-menu" aria-labelledby="selectLanguage">
+									  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="selectLanguage">
 										@foreach( get_language_list() as $language )
 											<a class="dropdown-item" href="{{ route('switch_language') }}?language={{ $language }}">{{ $language }}</a>
 										@endforeach
@@ -150,11 +150,11 @@
 
 								@if(Auth::user()->user_type == 'customer')
 									@php $notificatioCount = Auth::user()->member->unreadNotifications->count(); @endphp
-									<li class="dropdown d-none d-sm-inline-block">
+									<li class="dropdown d-inline-block">
 										<i class="ti-bell dropdown-toggle" data-toggle="dropdown">
 											<span>{{ $notificatioCount }}</span>
 										</i>
-										<div class="dropdown-menu bell-notify-box notify-box">
+										<div class="dropdown-menu dropdown-menu-right bell-notify-box notify-box">
 											<span class="notify-title">{{ _lang('You have').' '.$notificatioCount.' '._lang('new notifications') }}</span>
 											<div class="nofity-list">
 												@foreach (Auth::user()->member->notifications->take(15) as $notification)
@@ -176,9 +176,11 @@
 								<li>
 									<div class="user-profile">
 										<h4 class="user-name dropdown-toggle" data-toggle="dropdown">
-											<img class="avatar user-thumb" id="my-profile-img" src="{{ profile_picture() }}" alt="avatar"> {{ Auth::user()->name }} <i class="fa fa-angle-down"></i>
+											<img class="avatar user-thumb" id="my-profile-img" src="{{ profile_picture() }}" alt="avatar">
+											<span class="user-display-name d-none d-md-inline-block">{{ Auth::user()->name }}</span>
+											<i class="fa fa-angle-down"></i>
 										</h4>
-										<div class="dropdown-menu">
+										<div class="dropdown-menu dropdown-menu-right">
 											@if(auth()->user()->user_type == 'customer')
 											<a class="dropdown-item" href="{{ route('profile.membership_details') }}"><i class="ti-user text-muted mr-2"></i>&nbsp;{{ _lang('Membership Details') }}</a>
 											@endif
