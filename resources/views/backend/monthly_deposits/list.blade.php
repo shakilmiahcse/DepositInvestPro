@@ -6,7 +6,41 @@
         <div class="card no-export">
             <div class="card-header d-flex align-items-center">
                 <span class="panel-title">{{ _lang('Monthly Deposits') }}</span>
-                <div class="ml-auto d-flex flex-wrap justify-content-end">
+                <div class="ml-auto d-flex flex-wrap justify-content-end align-items-center">
+                    <button type="button" class="btn btn-outline-info btn-xs mr-2 mb-1" id="toggle_photo_column" title="{{ _lang('Toggle Photo Column') }}">
+                        <i class="ti-image mr-1"></i><span id="photo_toggle_label">{{ _lang('Show Photo') }}</span>
+                    </button>
+                    <div class="dropdown d-inline-block mr-2 mb-1">
+                        <button class="btn btn-outline-secondary btn-xs dropdown-toggle" type="button" id="colvisDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="ti-layout-grid2 mr-1"></i>{{ _lang('Column Visibility') }}
+                        </button>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="colvisDropdown" id="table_colvis_menu">
+                            <a class="dropdown-item toggle-vis" data-column="0" href="javascript:void(0);">
+                                <span class="colvis-check-wrap"></span> {{ _lang('Photo') }}
+                            </a>
+                            <a class="dropdown-item toggle-vis" data-column="1" href="javascript:void(0);">
+                                <span class="colvis-check-wrap"></span> {{ _lang('Account') }}
+                            </a>
+                            <a class="dropdown-item toggle-vis" data-column="2" href="javascript:void(0);">
+                                <span class="colvis-check-wrap"></span> {{ _lang('Member') }}
+                            </a>
+                            <a class="dropdown-item toggle-vis" data-column="3" href="javascript:void(0);">
+                                <span class="colvis-check-wrap"></span> {{ _lang('Month') }}
+                            </a>
+                            <a class="dropdown-item toggle-vis" data-column="4" href="javascript:void(0);">
+                                <span class="colvis-check-wrap"></span> {{ _lang('Year') }}
+                            </a>
+                            <a class="dropdown-item toggle-vis" data-column="5" href="javascript:void(0);">
+                                <span class="colvis-check-wrap"></span> {{ _lang('Amount') }}
+                            </a>
+                            <a class="dropdown-item toggle-vis" data-column="6" href="javascript:void(0);">
+                                <span class="colvis-check-wrap"></span> {{ _lang('Status') }}
+                            </a>
+                            <a class="dropdown-item toggle-vis" data-column="7" href="javascript:void(0);">
+                                <span class="colvis-check-wrap"></span> {{ _lang('Action') }}
+                            </a>
+                        </div>
+                    </div>
                     <button type="button" class="btn btn-outline-primary btn-xs mr-2 mb-1" id="monthly_deposit_reminder_settings">
                         <i class="ti-settings"></i>&nbsp;{{ _lang('Reminder Settings') }}
                     </button>
@@ -58,6 +92,7 @@
                 <table id="monthly_deposits_table" class="table table-bordered">
                     <thead>
                         <tr>
+                            <th class="text-center">{{ _lang('Photo') }}</th>
                             <th>{{ _lang('Account') }}</th>
                             <th>{{ _lang('Member') }}</th>
                             <th>{{ _lang('Month') }}</th>
@@ -162,17 +197,23 @@
             }
         },
         "columns" : [
+            { data : 'photo', name : 'photo', orderable: false, searchable: false, visible: false, className: 'text-center' },
             { data : 'account.account_number', name : 'account.account_number', 'defaultContent': '' },
             { data : 'member.first_name', name : 'member.first_name', 'defaultContent': '' },
             { data : 'month', name : 'month' },
             { data : 'year', name : 'year' },
             { data : 'amount', name : 'amount' },
             { data : 'status', name : 'status' },
-            { data : "action", name : "action" },
+            { data : "action", name : "action", orderable: false, searchable: false, className: 'text-center' },
         ],
         responsive: true,
         "bStateSave": true,
-        "bAutoWidth":false,
+        "stateLoadParams": function (settings, data) {
+            if (data && data.columns && data.columns.length !== 8) {
+                return false;
+            }
+        },
+        "bAutoWidth": false,
         "ordering": false,
         "language": {
            "decimal":        "",
@@ -196,7 +237,49 @@
         },
         drawCallback: function () {
             $(".dataTables_paginate > .pagination").addClass("pagination-bordered");
+        },
+        initComplete: function () {
+            updateColVisUi();
         }
+    });
+
+    function updateColVisUi() {
+        $('#table_colvis_menu .toggle-vis').each(function () {
+            var colIdx = parseInt($(this).data('column'), 10);
+            var col = monthly_deposits_table.column(colIdx);
+            var isVisible = col.visible();
+            var checkWrap = $(this).find('.colvis-check-wrap');
+            if (isVisible) {
+                checkWrap.html('<i class="ti-check text-success mr-1"></i>');
+            } else {
+                checkWrap.html('<i class="ti-close text-muted mr-1"></i>');
+            }
+        });
+
+        var photoVisible = monthly_deposits_table.column(0).visible();
+        if (photoVisible) {
+            $('#toggle_photo_column').addClass('btn-info text-white').removeClass('btn-outline-info');
+            $('#photo_toggle_label').text('{{ _lang('Hide Photo') }}');
+        } else {
+            $('#toggle_photo_column').removeClass('btn-info text-white').addClass('btn-outline-info');
+            $('#photo_toggle_label').text('{{ _lang('Show Photo') }}');
+        }
+    }
+
+    $(document).on('click', '#toggle_photo_column', function (e) {
+        e.preventDefault();
+        var column = monthly_deposits_table.column(0);
+        column.visible(!column.visible());
+        updateColVisUi();
+    });
+
+    $(document).on('click', '#table_colvis_menu .toggle-vis', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var colIdx = parseInt($(this).data('column'), 10);
+        var column = monthly_deposits_table.column(colIdx);
+        column.visible(!column.visible());
+        updateColVisUi();
     });
 
     function toggleReminderRecipientFields() {

@@ -65,10 +65,22 @@ class MonthlyDepositController extends Controller {
         $deposits->orderBy('year', 'desc')->orderBy('month', 'desc')->orderBy('id', 'desc');
 
         return Datatables::eloquent($deposits)
+            ->addColumn('photo', function ($deposit) {
+                $photo = ($deposit->member && $deposit->member->photo != null) ? profile_picture($deposit->member->photo) : asset('public/backend/images/avatar.png');
+                return '<div class="profile_picture text-center">'
+                    . '<img src="' . $photo . '" class="thumb-sm img-thumbnail">'
+                    . '</div>';
+            })
             ->editColumn('member.first_name', function ($deposit) {
+                if (!$deposit->member || !$deposit->member->id) {
+                    return '';
+                }
                 return '<a href="' . route('members.show', $deposit->member->id) . '">' . $deposit->member->first_name . ' ' . $deposit->member->last_name . '</a> ';
             })
             ->editColumn('account.account_number', function ($deposit) {
+                if (!$deposit->account || !$deposit->account->id) {
+                    return '';
+                }
                 return '<a href="' . route('savings_accounts.show', $deposit->account->id) . '">' . $deposit->account->account_number . '</a>';
             })
             ->editColumn('month', function ($deposit) {
@@ -79,6 +91,75 @@ class MonthlyDepositController extends Controller {
                     return '<span class="badge badge-success">' . _lang('Paid') . '</span>';
                 }
                 return '<span class="badge badge-warning">' . _lang('Pending') . '</span>';
+            })
+            ->filterColumn('member.first_name', function ($query, $keyword) {
+                $trimmed = trim($keyword);
+                $words   = array_filter(preg_split('/\s+/', $trimmed));
+
+                $query->whereHas('member', function ($q) use ($trimmed, $words) {
+                    $q->where(function ($sub) use ($trimmed, $words) {
+                        $sub->where('first_name', 'LIKE', "%{$trimmed}%")
+                            ->orWhere('last_name', 'LIKE', "%{$trimmed}%")
+                            ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$trimmed}%"])
+                            ->orWhere('member_no', 'LIKE', "%{$trimmed}%")
+                            ->orWhere('email', 'LIKE', "%{$trimmed}%")
+                            ->orWhere('mobile', 'LIKE', "%{$trimmed}%");
+
+                        if (count($words) > 1) {
+                            foreach ($words as $word) {
+                                $sub->orWhere('first_name', 'LIKE', "%{$word}%")
+                                    ->orWhere('last_name', 'LIKE', "%{$word}%")
+                                    ->orWhere('member_no', 'LIKE', "%{$word}%")
+                                    ->orWhere('email', 'LIKE', "%{$word}%")
+                                    ->orWhere('mobile', 'LIKE', "%{$word}%");
+                            }
+                        }
+                    });
+                });
+            })
+            ->filterColumn('account.account_number', function ($query, $keyword) {
+                $trimmed = trim($keyword);
+                $words   = array_filter(preg_split('/\s+/', $trimmed));
+
+                $query->whereHas('account', function ($q) use ($trimmed, $words) {
+                    $q->where(function ($sub) use ($trimmed, $words) {
+                        $sub->where('account_number', 'LIKE', "%{$trimmed}%");
+                        if (count($words) > 1) {
+                            foreach ($words as $word) {
+                                $sub->orWhere('account_number', 'LIKE', "%{$word}%");
+                            }
+                        }
+                    });
+                });
+            })
+            ->filterColumn('month', function ($query, $keyword) {
+                $trimmed = trim($keyword);
+                $monthMap = [];
+                for ($m = 1; $m <= 12; $m++) {
+                    $fullMonth  = strtolower(date('F', mktime(0, 0, 0, $m, 1)));
+                    $shortMonth = strtolower(date('M', mktime(0, 0, 0, $m, 1)));
+                    if (str_contains($fullMonth, strtolower($trimmed)) || str_contains($shortMonth, strtolower($trimmed))) {
+                        $monthMap[] = $m;
+                    }
+                }
+                if (!empty($monthMap)) {
+                    $query->whereIn('month', $monthMap);
+                } elseif (is_numeric($trimmed)) {
+                    $query->where('month', (int) $trimmed);
+                }
+            })
+            ->filterColumn('year', function ($query, $keyword) {
+                if (is_numeric(trim($keyword))) {
+                    $query->where('year', (int) trim($keyword));
+                }
+            })
+            ->filterColumn('status', function ($query, $keyword) {
+                $trimmed = strtolower(trim($keyword));
+                if (str_contains('paid', $trimmed)) {
+                    $query->where('status', 'paid');
+                } elseif (str_contains('pending', $trimmed)) {
+                    $query->where('status', 'pending');
+                }
             })
             ->addColumn('action', function ($deposit) {
                 $action = '<div class="d-flex justify-content-center flex-wrap">';
@@ -94,7 +175,7 @@ class MonthlyDepositController extends Controller {
 
                 return $action . '</div>';
             })
-            ->rawColumns(['status', 'action', 'member.first_name', 'account.account_number'])
+            ->rawColumns(['photo', 'status', 'action', 'member.first_name', 'account.account_number'])
             ->make(true);
     }
 
